@@ -1,0 +1,20 @@
+spring:
+    application:
+      name: ticket-service
+
+    config:
+      import: "optional:configserver:http://localhost:8888"
+    
+    jpa:
+      hibernate:
+        naming:
+          physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
+    lease-renewal-interval-in-seconds: 5   # intervalle entre les heartbeats (5s au lieu de 30s)
+    lease-expiration-duration-in-seconds: 10  # durée après laquelle Eureka expire une instance si pas de heartbeat
