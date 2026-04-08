@@ -1,0 +1,39 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: performance-service
+
+# SAP HANA DB Configuration
+  datasource:
+    url: jdbc:sap://172.16.102.77:30015
+    driver-class-name: com.sap.db.jdbc.Driver
+    username: DEVADMIN
+    password: D01Admin
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 60000
+      connection-timeout: 30000
+      max-lifetime: 1800000
+      pool-name: HANA-HikariCP
+
+  # jpa configuration
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.HANARowStoreDialect
+        format_sql: true
+        jdbc.lob.non_contextual_creation: true
+        globally_quoted_identifiers: true
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
