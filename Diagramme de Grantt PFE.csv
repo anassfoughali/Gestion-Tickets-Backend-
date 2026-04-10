@@ -1,0 +1,17 @@
+Sprint ;Tâche;  Début;Fin;Durée (jours)
+Sprint  1;Définition architecture Backend Microservices + CI/CD v0;01/04/2026;02/04/2026;2
+Sprint 1;Authentification sécurisée JWT + Spring Security;03/04/2026;06/04/2026;2
+Sprint 1;Maquetage primaire interface utilisateur;07/04/2026;08/04/2026;2
+Sprint 1 ;Affichage tableau des tickets;09/04/2026;10/04/2026;2
+Sprint 1 ;Barre de recherche;13/04/2026;14/04/2026;2
+Sprint 1;Filtre ;15/04/2026;16/04/2026;2
+Sprint 2 ;Les KPI sur les tickets;17/04/2026;20/04/2026;2
+Sprint 2 ;Visulation détaillé des KPI tickets;21/04/2026;22/04/2026;2
+Sprint 2 ;Exportation des KPI;23/04/2026;24/04/2026;2
+Sprint 3;Performance technicien;27/04/2026;28/04/2026;2
+Sprint 3;Calcul de délai  ;29/04/2026;30/04/2026;2
+Sprint 4 ;Exportation des statistiques de performance sous Excel;01/05/2026;04/05/2026;2
+Sprint 4 ;Affichage nombre total de tickets traités/clôturés (Card KPI);05/05/2026;06/05/2026;2
+Sprint 4 ;Visualisation graphique de l’évolution du délai moyen;07/05/2026;08/05/2026;2
+Sprint 4 ;Graphique en barres du nombre de tickets traités par jour;11/05/2026;12/05/2026;2
+Sprint 4 ;Amélioration des fonctionnalités de reporting et d’analyse;;02/01/1900;2

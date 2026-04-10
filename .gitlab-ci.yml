@@ -1,0 +1,97 @@
+# ============================================================
+# GitLab CI/CD Pipeline - Finatech Microservices
+# ============================================================
+
+stages:
+  - build
+
+# Infrastructure Services
+build:config-server:
+  stage: build
+  image: maven:3.9-eclipse-temurin-17
+  cache:
+    key: config-server
+    paths:
+      - config-server/.m2/repository
+  script:
+    - cd config-server
+    - chmod +x ./mvnw
+    - ./mvnw package -DskipTests -Dmaven.repo.local=.m2/repository
+
+build:discovery-service:
+  stage: build
+  image: maven:3.9-eclipse-temurin-17
+  cache:
+    key: discovery-service
+    paths:
+      - discovery-service/.m2/repository
+  script:
+    - cd discovery-service
+    - chmod +x ./mvnw
+    - ./mvnw package -DskipTests -Dmaven.repo.local=.m2/repository
+
+build:api-gateway:
+  stage: build
+  image: maven:3.9-eclipse-temurin-17
+  cache:
+    key: api-gateway
+    paths:
+      - api-gateway/.m2/repository
+  script:
+    - cd api-gateway
+    - chmod +x ./mvnw
+    - ./mvnw package -DskipTests -Dmaven.repo.local=.m2/repository
+
+# Business Services
+build:ticket-service:
+  stage: build
+  image: maven:3.9-eclipse-temurin-17
+  cache:
+    key: ticket-service
+    paths:
+      - ticket-service/.m2/repository
+  script:
+    - cd ticket-service
+    - chmod +x ./mvnw
+    - ./mvnw package -DskipTests -Dmaven.repo.local=.m2/repository
+
+build:performance-service:
+  stage: build
+  image: maven:3.9-eclipse-temurin-17
+  cache:
+    key: performance-service
+    paths:
+      - performance-service/.m2/repository
+  script:
+    - cd performance-service
+    - chmod +x ./mvnw
+    - ./mvnw package -DskipTests -Dmaven.repo.local=.m2/repository
+
+build:auth-service:
+  stage: build
+  image: maven:3.9-eclipse-temurin-17
+  cache:
+    key: auth-service
+    paths:
+      - auth-service/.m2/repository
+  script:
+    - cd auth-service
+    - chmod +x ./mvnw
+    - ./mvnw package -DskipTests -Dmaven.repo.local=.m2/repository
+
+
+build:dashboard-front:
+  stage: build
+  image: node:20-alpine
+  cache:
+    key: dashboard-front-$CI_COMMIT_REF_SLUG
+    paths:
+      - Dashboard-front/dashboard-tickets-frontend/node_modules/
+  script:
+    - cd Dashboard-front/dashboard-tickets-frontend
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - Dashboard-front/dashboard-tickets-frontend/build/
+    expire_in: 1 hour
