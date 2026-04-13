@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { FiUser, FiLock, FiEye, FiEyeOff, FiAlertCircle } from "react-icons/fi";
-import logo from "../assets/finatech_group_logo.png"; // ✅
+import logo from "../assets/finatech_group_logo.png";
 
 const BLUE = "#2784c1";
 const GRAY = "#a3a3a3";

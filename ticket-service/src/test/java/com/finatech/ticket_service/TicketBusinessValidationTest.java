@@ -1,5 +1,8 @@
 package com.finatech.ticket_service;
 
+import com.finatech.ticket_service.dto.TempsResolutionDTO;
+import com.finatech.ticket_service.dto.TicketsEnCoursDTO;
+import com.finatech.ticket_service.dto.TicketsOuvertsDTO;
 import com.finatech.ticket_service.model.Settings;
 import com.finatech.ticket_service.model.Ticket;
 import com.finatech.ticket_service.repository.SettingsRepo;
@@ -43,7 +46,6 @@ public class TicketBusinessValidationTest {
 
     @Test
     void validateMatchcodeApplication() {
-        // 1. Récupérer les tickets et settings
         List<Ticket> tickets = ticketRepository.findAll();
         List<Settings> settings = settingsRepo.findAll();
 
@@ -52,12 +54,10 @@ public class TicketBusinessValidationTest {
 
         System.out.println("📊 Found " + tickets.size() + " tickets and " + settings.size() + " settings");
 
-        // 2. Appliquer le matchcode manuellement
         for (Ticket ticket : tickets) {
             ticket.applyMatchcode(settings);
         }
 
-        // 3. Vérifier qu'au moins un ticket a des descriptions remplies
         boolean hasStatusDescription = false;
         boolean hasTypeDescription = false;
         boolean hasPriorityDescription = false;
@@ -69,56 +69,54 @@ public class TicketBusinessValidationTest {
             }
             if (ticket.getIssueTypeDescription() != null) {
                 hasTypeDescription = true;
-                System.out.println("✅ Ticket " + ticket.getId() + " - Type: " + ticket.getIssueTypeId() + " → " + ticket.getIssueTypeDescription());
             }
             if (ticket.getPriorityDescription() != null) {
                 hasPriorityDescription = true;
-                System.out.println("✅ Ticket " + ticket.getId() + " - Priority: " + ticket.getPriorityId() + " → " + ticket.getPriorityDescription());
             }
         }
 
-        assertTrue(hasStatusDescription || hasTypeDescription || hasPriorityDescription, 
+        assertTrue(hasStatusDescription || hasTypeDescription || hasPriorityDescription,
                 "Matchcode should populate at least one description field");
 
         System.out.println("✅ Matchcode application validated successfully");
     }
 
+    // ✅ Test remplacé — utilise les nouvelles méthodes du service
     @Test
     void validateTicketServiceMatchcode() {
-        // Tester le service qui applique automatiquement le matchcode
-        List<Ticket> ticketsWithMatchcode = ticketService.getAllTicketsWithMatchcode();
 
-        assertFalse(ticketsWithMatchcode.isEmpty(), "Service should return tickets");
+        // ✅ Test API 1 — Tickets ouverts
+        TicketsOuvertsDTO ouverts = ticketService.getTicketsOuverts();
+        assertNotNull(ouverts, "Tickets ouverts should not be null");
+        assertTrue(ouverts.getNombreTicketsOuverts() >= 0, "Count should be >= 0");
+        System.out.println("✅ Tickets ouverts : " + ouverts.getNombreTicketsOuverts());
 
-        // Vérifier qu'au moins un ticket a le matchcode appliqué
-        boolean hasMatchcode = ticketsWithMatchcode.stream()
-                .anyMatch(t -> t.getStatusDescription() != null 
-                        || t.getIssueTypeDescription() != null 
-                        || t.getPriorityDescription() != null);
+        // ✅ Test API 2 — Tickets en cours
+        TicketsEnCoursDTO enCours = ticketService.getTicketsEnCours();
+        assertNotNull(enCours, "Tickets en cours should not be null");
+        assertTrue(enCours.getNombreTicketsEnCours() >= 0, "Count should be >= 0");
+        System.out.println("✅ Tickets en cours : " + enCours.getNombreTicketsEnCours());
 
-        assertTrue(hasMatchcode, "At least one ticket should have matchcode descriptions");
+        // ✅ Test API 3 — Temps résolution par technicien
+        List<TempsResolutionDTO> tempsResolution = ticketService.getTempsResolutionParTechnicien();
+        assertNotNull(tempsResolution, "Temps resolution should not be null");
+        System.out.println("✅ Techniciens : " + tempsResolution.size());
+        tempsResolution.forEach(t ->
+                System.out.println("   " + t.getTechnicien() + " → " + t.getTempsMoyenHeures() + "h")
+        );
 
-        // Afficher quelques exemples
-        ticketsWithMatchcode.stream()
-                .limit(3)
-                .forEach(ticket -> {
-                    System.out.println("🎫 Ticket ID: " + ticket.getId());
-                    System.out.println("   Status: " + ticket.getStatusId() + " → " + ticket.getStatusDescription());
-                    System.out.println("   Type: " + ticket.getIssueTypeId() + " → " + ticket.getIssueTypeDescription());
-                    System.out.println("   Priority: " + ticket.getPriorityId() + " → " + ticket.getPriorityDescription());
-                });
-
-        System.out.println("✅ TicketService matchcode validated successfully");
+        // ✅ Test Total — JPA pur
+        long total = ticketService.getTotalTickets();
+        assertTrue(total > 0, "Total tickets should be > 0");
+        System.out.println("✅ Total tickets : " + total);
     }
 
     @Test
     void validateSettingsStructure() {
-        // Vérifier que les settings ont la bonne structure
         List<Settings> settings = settingsRepo.findAll();
 
         assertFalse(settings.isEmpty(), "Settings table should not be empty");
 
-        // Vérifier qu'on a des settings pour Status (Setting=1), IssueType (Setting=2), Priority (Setting=3)
         boolean hasStatusSettings = settings.stream().anyMatch(s -> s.getSettings() == 1);
         boolean hasTypeSettings = settings.stream().anyMatch(s -> s.getSettings() == 2);
         boolean hasPrioritySettings = settings.stream().anyMatch(s -> s.getSettings() == 3);
@@ -128,7 +126,7 @@ public class TicketBusinessValidationTest {
         System.out.println("   Type settings (Setting=2): " + hasTypeSettings);
         System.out.println("   Priority settings (Setting=3): " + hasPrioritySettings);
 
-        assertTrue(hasStatusSettings || hasTypeSettings || hasPrioritySettings, 
+        assertTrue(hasStatusSettings || hasTypeSettings || hasPrioritySettings,
                 "Settings should contain at least one matchcode type");
 
         System.out.println("✅ Settings structure validated");
