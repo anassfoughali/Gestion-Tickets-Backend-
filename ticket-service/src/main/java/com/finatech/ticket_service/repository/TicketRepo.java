@@ -9,14 +9,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface TicketRepo extends JpaRepository<Ticket, Long> {
-    
-    /**
-     * Compte le nombre total de tickets dans la base de données
-     * Méthode héritée automatiquement de JpaRepository<Ticket, Long>
-     * Génère automatiquement : SELECT COUNT(*) FROM "ZDEV_GP"."MARISupportIssue"
-     * 
-     * @return Le nombre total de tickets
-     */
-    // count() est automatiquement disponible via JpaRepository
-    
+  
 }
