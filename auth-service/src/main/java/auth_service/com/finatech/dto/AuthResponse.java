@@ -1,9 +1,6 @@
 package auth_service.com.finatech.dto;
-
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
 @Data
 @AllArgsConstructor
 
