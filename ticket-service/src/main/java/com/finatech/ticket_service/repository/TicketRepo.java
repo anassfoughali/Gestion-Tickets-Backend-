@@ -51,4 +51,7 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
         ORDER BY tempsMoyenHeures ASC
         """, nativeQuery = true)
     List<Object[]> getTempsResolutionParTechnicien();
-}
+
+
+
+ }
