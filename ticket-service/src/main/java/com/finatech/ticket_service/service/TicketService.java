@@ -20,7 +20,6 @@ public class TicketService {
     public TicketsOuvertsDTO getTicketsOuverts() {
         return new TicketsOuvertsDTO(ticketRepo.countTicketsOuverts());
     }
-
     //  API  — Tickets en cours — SQL natif
     public TicketsEnCoursDTO getTicketsEnCours() {
         return new TicketsEnCoursDTO(ticketRepo.countTicketsEnCours());
