@@ -1,5 +1,4 @@
 package com.finatech.ticket_service.controller;
-
 import com.finatech.ticket_service.dto.TempsResolutionDTO;
 import com.finatech.ticket_service.dto.TicketsEnCoursDTO;
 import com.finatech.ticket_service.dto.TicketsOuvertsDTO;
@@ -10,7 +9,6 @@ import com.finatech.ticket_service.service.impl.TicketImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 @RestController
 @RequestMapping("/api/tickets")
