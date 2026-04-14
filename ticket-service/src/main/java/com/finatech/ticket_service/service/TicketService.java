@@ -44,6 +44,6 @@ public class TicketService {
 
     //  API  — Tickets résolus — SQL natif
     public TicketsResolusDTO getTicketsResolus() {
-        return new TicketsResolusDTO(ticketRepo.countNombreTotaleTicketsResolus());
+        return new TicketsResolusDTO(ticketRepo.countTicketsResolus());
     }
 }

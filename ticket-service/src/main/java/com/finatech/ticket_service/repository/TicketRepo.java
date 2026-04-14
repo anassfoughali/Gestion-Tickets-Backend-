@@ -3,7 +3,6 @@ import com.finatech.ticket_service.model.Ticket;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 
 @Repository
@@ -52,6 +51,25 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
         """, nativeQuery = true)
     List<Object[]> getTempsResolutionParTechnicien();
 
+    // API - Tickets résolus - SQL natif
+    @Query(value = """
+        SELECT COUNT(i."IssueID")
+        FROM "ZDEV_GP"."MARISupportIssue" i
+        JOIN "ZDEV_GP"."MARISupportSettings" s
+          ON i."Status" = s."ID" AND s."Setting" = 1
+        WHERE LOWER(s."Matchcode") LIKE '%résolu%'
+           OR LOWER(s."Matchcode") LIKE '%fermé%'
+           OR LOWER(s."Matchcode") LIKE '%clos%'
+        """, nativeQuery = true)
+    long countTicketsResolus();
 
+    // API - Temps de résolution moyen - SQL natif
+    @Query(value = """
+        SELECT COALESCE(AVG(DAYS_BETWEEN(i."RequestDate", i."USER_DateCloture") * 24.0), 0.0)
+        FROM "ZDEV_GP"."MARISupportIssue" i
+        WHERE i."USER_DateCloture" IS NOT NULL
+          AND i."USER_DateCloture" >= i."RequestDate"
+        """, nativeQuery = true)
+    Double getTempsResolutionMoyen();
 
  }
