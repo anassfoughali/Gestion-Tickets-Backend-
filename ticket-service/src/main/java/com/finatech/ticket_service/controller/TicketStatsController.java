@@ -17,7 +17,7 @@ public class TicketStatsController {
     }
 
     @GetMapping("/count")
-    public ResponseEntity<Long> getTotalTicketCount() {
+    public ResponseEntity<Long> getTotalTicketCount() {I 
         try {
             long count = service.Totale();
             return ResponseEntity.ok(count);
