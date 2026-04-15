@@ -9,7 +9,7 @@ public class TicketCompletDTO {
 
     private int IssueId ;
     private String object ;
-    private String Description ;// Technicien nom
+    private String Description ;
     private String Status ;
     private String Priorite ;
     private String date_reception;
