@@ -8,7 +8,6 @@ import java.util.List;
 @Repository
 public interface TicketRepo extends JpaRepository<Ticket, Long> {
 
-
     // API - Tickets ouverts - SQL natif
     @Query(value = """
         SELECT COUNT(i."IssueID")
