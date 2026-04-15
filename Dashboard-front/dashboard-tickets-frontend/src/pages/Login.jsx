@@ -27,15 +27,23 @@ const Login = () => {
     setLoading(true);
     setError("");
 
-    const result = await login(formData.username.trim(), formData.password);
-
-    if (result.success) {
+    try {
+      await login(formData.username.trim(), formData.password);
       navigate("/dashboard");
-    } else {
-      setError(result.error);
+    } catch (err) {
+      if (err.response?.status === 401) {
+        setError("Identifiants incorrects. Vérifiez votre username et mot de passe.");
+      } else if (err.response?.status === 500) {
+        setError("Erreur serveur. Vérifiez que le auth-service est démarré.");
+      } else if (err.code === "ERR_NETWORK") {
+        setError("Impossible de contacter le serveur. Vérifiez que Spring Boot tourne.");
+      } else {
+        setError(err.response?.data?.message || err.message || "Erreur inconnue.");
+      }
       setFormData((prev) => ({ ...prev, password: "" }));
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
