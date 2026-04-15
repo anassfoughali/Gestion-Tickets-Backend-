@@ -1,8 +1,14 @@
 package com.finatech.ticket_service.service.impl;
 import com.finatech.ticket_service.dto.TempsResolutionMoyenDTO;
+import com.finatech.ticket_service.dto.TicketEvolutionParJourDTO;
 import com.finatech.ticket_service.repository.TicketRepo;
 import com.finatech.ticket_service.service.TicketInterfaceService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class TicketImpl  implements TicketInterfaceService {
@@ -29,9 +35,19 @@ public class TicketImpl  implements TicketInterfaceService {
        }
        return new TempsResolutionMoyenDTO(temps);
     }
+
+    @Override
+    public List<TicketEvolutionParJourDTO> getEvolutionParJour() {
+        // Appel du repository
+        List<Object[]> results = ticketRepo.getEvolutionParJour();
+        // Mapping vers DTO
+        return results.stream()
+                .map(row -> new TicketEvolutionParJourDTO(
+                        (String) row[0],
+                        row[1] != null ? ((Number) row[1]).longValue() : 0L,
+                        row[2] != null ? ((Number) row[2]).longValue() : 0L
+
+                ))
+                .collect(Collectors.toList());
+    }
 }
-// TODO: Implémenter getEvolutionParJour()
-// - Appeler ticketRepo.getEvolutionParJour()
-// - Mapper Object[] vers DTO avec stream().map()
-// - Gérer null: row[1] != null ? ((Number) row[1]).longValue() : 0
-// - Retourner collect(Collectors.toList())

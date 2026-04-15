@@ -1,10 +1,6 @@
 package com.finatech.ticket_service.controller;
 
-import com.finatech.ticket_service.dto.TempsResolutionDTO;
-import com.finatech.ticket_service.dto.TempsResolutionMoyenDTO;
-import com.finatech.ticket_service.dto.TicketsEnCoursDTO;
-import com.finatech.ticket_service.dto.TicketsOuvertsDTO;
-import com.finatech.ticket_service.dto.TicketsResolusDTO;
+import com.finatech.ticket_service.dto.*;
 import com.finatech.ticket_service.service.TicketService;
 import com.finatech.ticket_service.service.impl.TicketImpl;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +47,16 @@ public class TicketController {
         try {
             return ResponseEntity.ok(ticketImpl.TempsResolutionMoyen());
         } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    @GetMapping("/stats-par-jour")
+    public ResponseEntity<List<TicketEvolutionParJourDTO>> getEvolutionTicket(){
+        try {
+            List<TicketEvolutionParJourDTO> data = ticketImpl.getEvolutionParJour() ;
+            return ResponseEntity.ok(data) ;
+        }catch (Exception e){
             return ResponseEntity.status(500).build();
         }
     }
