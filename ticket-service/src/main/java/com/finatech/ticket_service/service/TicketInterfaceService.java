@@ -7,3 +7,7 @@ public interface TicketInterfaceService  {
  TempsResolutionMoyenDTO TempsResolutionMoyen() ; 
 
 }
+// TODO: Ajouter signature méthode
+// - Import: TicketEvolutionParJourDTO et List
+// - Méthode: List<TicketEvolutionParJourDTO> getEvolutionParJour()
+// - Javadoc simple

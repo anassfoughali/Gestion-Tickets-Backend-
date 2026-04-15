@@ -73,3 +73,9 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
     Double getTempsResolutionMoyen();
 
  }
+    // TODO: Ajouter méthode getEvolutionParJour()
+    // - @Query avec nativeQuery = true
+    // - SQL: CTE pour générer 30 derniers jours
+    // - Compter tickets créés (USER_DateReceptionEmail) et résolus (USER_DateCloture)
+    // - LEFT JOIN sur dates, COALESCE pour remplacer NULL par 0
+    // - Retour: List<Object[]> avec [date, crees, resolus]

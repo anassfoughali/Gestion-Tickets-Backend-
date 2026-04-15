@@ -30,3 +30,8 @@ public class TicketImpl  implements TicketInterfaceService {
        return new TempsResolutionMoyenDTO(temps);
     }
 }
+// TODO: Implémenter getEvolutionParJour()
+// - Appeler ticketRepo.getEvolutionParJour()
+// - Mapper Object[] vers DTO avec stream().map()
+// - Gérer null: row[1] != null ? ((Number) row[1]).longValue() : 0
+// - Retourner collect(Collectors.toList())
