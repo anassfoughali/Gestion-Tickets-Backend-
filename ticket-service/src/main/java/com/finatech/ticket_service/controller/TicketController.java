@@ -61,8 +61,3 @@ public class TicketController {
         }
     }
 }
-// TODO: Ajouter endpoint GET /stats-par-jour
-// - @GetMapping("/stats-par-jour")
-// - ResponseEntity<List<TicketEvolutionParJourDTO>>
-// - try/catch: return ResponseEntity.ok(data) ou status(500)
-// - Appeler ticketImpl.getEvolutionParJour()

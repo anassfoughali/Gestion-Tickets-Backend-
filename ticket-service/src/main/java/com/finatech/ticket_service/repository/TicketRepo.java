@@ -72,39 +72,33 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
         """, nativeQuery = true)
     Double getTempsResolutionMoyen();
 
-    // API - Evolution des tickets par jour - SQL natif
+    // API - Evolution des tickets par jour - SQL natif (colonnes String)
     @Query(value = """
-        WITH date_range AS (
-            SELECT ADD_DAYS(CURRENT_DATE, -LEVEL + 1) as date_val
-            FROM DUMMY
-            CONNECT BY LEVEL <= 30
-        ),
-        tickets_crees AS (
-            SELECT 
-                TO_VARCHAR(i."USER_DateReceptionEmail", 'YYYY-MM-DD') as date_creation,
-                COUNT(*) as nb_crees
-            FROM "ZDEV_GP"."MARISupportIssue" i
-            WHERE i."USER_DateReceptionEmail" >= ADD_DAYS(CURRENT_DATE, -30)
-              AND i."USER_DateReceptionEmail" IS NOT NULL
-            GROUP BY TO_VARCHAR(i."USER_DateReceptionEmail", 'YYYY-MM-DD')
-        ),
-        tickets_resolus AS (
-            SELECT 
-                TO_VARCHAR(i."USER_DateCloture", 'YYYY-MM-DD') as date_resolution,
-                COUNT(*) as nb_resolus
-            FROM "ZDEV_GP"."MARISupportIssue" i
-            WHERE i."USER_DateCloture" >= ADD_DAYS(CURRENT_DATE, -30)
-              AND i."USER_DateCloture" IS NOT NULL
-            GROUP BY TO_VARCHAR(i."USER_DateCloture", 'YYYY-MM-DD')
-        )
         SELECT 
-            TO_VARCHAR(dr.date_val, 'YYYY-MM-DD') as date,
+            COALESCE(tc.date_creation, tr.date_resolution) as date,
             COALESCE(tc.nb_crees, 0) as crees,
             COALESCE(tr.nb_resolus, 0) as resolus
-        FROM date_range dr
-        LEFT JOIN tickets_crees tc ON TO_VARCHAR(dr.date_val, 'YYYY-MM-DD') = tc.date_creation
-        LEFT JOIN tickets_resolus tr ON TO_VARCHAR(dr.date_val, 'YYYY-MM-DD') = tr.date_resolution
-        ORDER BY dr.date_val ASC
+        FROM (
+            SELECT 
+                SUBSTRING(i."USER_DateReceptionEmail", 1, 10) as date_creation,
+                COUNT(*) as nb_crees
+            FROM "ZDEV_GP"."MARISupportIssue" i
+            WHERE i."USER_DateReceptionEmail" IS NOT NULL
+              AND LENGTH(i."USER_DateReceptionEmail") >= 10
+              AND SUBSTRING(i."USER_DateReceptionEmail", 1, 10) >= TO_VARCHAR(ADD_DAYS(CURRENT_DATE, -30), 'YYYY-MM-DD')
+            GROUP BY SUBSTRING(i."USER_DateReceptionEmail", 1, 10)
+        ) tc
+        FULL OUTER JOIN (
+            SELECT 
+                SUBSTRING(i."USER_DateCloture", 1, 10) as date_resolution,
+                COUNT(*) as nb_resolus
+            FROM "ZDEV_GP"."MARISupportIssue" i
+            WHERE i."USER_DateCloture" IS NOT NULL
+              AND LENGTH(i."USER_DateCloture") >= 10
+              AND SUBSTRING(i."USER_DateCloture", 1, 10) >= TO_VARCHAR(ADD_DAYS(CURRENT_DATE, -30), 'YYYY-MM-DD')
+            GROUP BY SUBSTRING(i."USER_DateCloture", 1, 10)
+        ) tr ON tc.date_creation = tr.date_resolution
+        ORDER BY COALESCE(tc.date_creation, tr.date_resolution) ASC
         """, nativeQuery = true)
     List<Object[]> getEvolutionParJour();
 
