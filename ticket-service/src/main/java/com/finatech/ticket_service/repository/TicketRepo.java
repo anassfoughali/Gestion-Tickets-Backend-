@@ -102,4 +102,38 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
         """, nativeQuery = true)
     List<Object[]> getEvolutionParJour();
 
+
+    @Query(value = """
+        SELECT 
+            t."IssueID" AS IssueId,
+            t."BriefDescription" AS object,
+            g."Description" AS Description,
+            
+            s_status."Description" AS Status,
+            s_priority."Description" AS Priorite,
+            
+            t."USER_DateReceptionEmail" AS date_reception,
+            t."USER_DateCloture" AS date_cloture,
+            
+            CASE 
+                WHEN t."USER_DateCloture" IS NOT NULL AND t."USER_DateReceptionEmail" IS NOT NULL
+                THEN DAYS_BETWEEN(TO_DATE(t."USER_DateReceptionEmail", 'DD/MM/YYYY HH24:MI'), t."USER_DateCloture")
+                ELSE NULL
+            END AS duree_resolution
+
+        FROM "ZDEV_GP"."MARISupportIssue" t
+
+        LEFT JOIN "ZDEV_GP"."MARISupportGroup" g 
+            ON t."SupportGroupID" = g."GroupId"
+
+        LEFT JOIN "ZDEV_GP"."MARISupportSettings" s_status
+            ON s_status."ID" = t."Status"
+            AND s_status."Setting" = 1
+
+        LEFT JOIN "ZDEV_GP"."MARISupportSettings" s_priority
+            ON s_priority."ID" = t."Priority"
+            AND s_priority."Setting" = 3
+        """, nativeQuery = true)
+    List<Object[]> getTicketsComplets();
+
 }
