@@ -19,3 +19,7 @@ public class TechnicienImpl implements TechnicienInterface{
         return technicienRepo.countTicketsByTechnicien(technicienId);
     }
 }
+
+    // TODO: Implémenter getTicketsResolus(int technicienId)
+    // - Appeler technicienRepo.countTicketsResolusByTechnicien(technicienId)
+    // - Retourner le count directement

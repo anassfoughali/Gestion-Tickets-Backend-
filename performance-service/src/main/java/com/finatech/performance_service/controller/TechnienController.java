@@ -24,3 +24,10 @@ public class TechnienController {
     }
 
 }
+
+    // TODO: Ajouter endpoint GET /{technicienId}/resolus
+    // - @GetMapping("/{technicienId}/resolus")
+    // - @PathVariable int technicienId
+    // - Retour: long (nombre de tickets résolus)
+    // - Appeler service.getTicketsResolus(technicienId)
+    // - Javadoc: Retourne le nombre de tickets résolus par un technicien

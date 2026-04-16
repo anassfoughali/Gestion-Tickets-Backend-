@@ -6,3 +6,7 @@ public interface TechnicienInterface {
 
     long getTechnicien(int technicienId);
 }
+
+    // TODO: Ajouter signature méthode
+    // - Méthode: long getTicketsResolus(int technicienId)
+    // - Javadoc: Retourne le nombre de tickets résolus pour un technicien

@@ -18,3 +18,10 @@ public interface TechnicienRepo extends JpaRepository<Technicien, Integer> {
     long countTicketsByTechnicien(@Param("technicienId") int technicienId);
 
 }
+
+    // TODO: Ajouter méthode countTicketsResolusByTechnicien
+    // - @Query avec nativeQuery = true
+    // - SQL: COUNT tickets avec USER_DateCloture IS NOT NULL
+    // - WHERE: i."SupportGroupID" = :technicienId
+    // - Paramètre: @Param("technicienId") int technicienId
+    // - Retour: long
