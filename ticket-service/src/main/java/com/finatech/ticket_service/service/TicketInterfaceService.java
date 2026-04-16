@@ -2,7 +2,6 @@ package com.finatech.ticket_service.service;
 import com.finatech.ticket_service.dto.TempsResolutionMoyenDTO;
 import com.finatech.ticket_service.dto.TicketCompletDTO;
 import com.finatech.ticket_service.dto.TicketEvolutionParJourDTO;
-
 import java.util.List;
 
 public interface TicketInterfaceService  {
@@ -11,13 +10,6 @@ public interface TicketInterfaceService  {
  List<TicketEvolutionParJourDTO> getEvolutionParJour();
  List<TicketCompletDTO> getTicketDetails();
 
-}
-// TODO: Ajouter signature méthode
-// - Import: TicketEvolutionParJourDTO et List
-// - Méthode: List<TicketEvolutionParJourDTO> getEvolutionParJour()
-// - Javadoc simple
 
-// TODO: Ajouter signature méthode
-// - Import: TicketsParTechnicienDTO
-// - Méthode: TicketsParTechnicienDTO getTicketsByTechnicien(int technicienId)
-// - Javadoc: Retourne le nombre de tickets pour un technicien spécifique
+}
+

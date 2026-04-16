@@ -68,6 +68,11 @@ public class TicketImpl  implements TicketInterfaceService {
                         (String) row[8]                  // client
                 )).toList();
     }
+
+    @Override
+    public long getTichnicien(int technicienId) {
+        return ticketRepo.countTicketsByTechnicien(technicienId);
+    }
 }
 
 // TODO: Implémenter getTicketsByTechnicien(int technicienId)

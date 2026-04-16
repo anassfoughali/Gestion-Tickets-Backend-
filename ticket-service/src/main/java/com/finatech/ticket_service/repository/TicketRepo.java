@@ -177,15 +177,4 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
         """, nativeQuery = true)
     List<Object[]> getTicketsComplets();
 
-
-
- 
-    // API - Nombre de tickets pour un technicien spécifique - SQL natif
-    @Query(value = """
-        SELECT COUNT(i."IssueID")
-        FROM "ZDEV_GP"."MARISupportIssue" i
-        WHERE i."SupportGroupID" = :technicienId
-        """, nativeQuery = true)
-    long countTicketsByTechnicien(@Param("technicienId") int technicienId);
-
 }
