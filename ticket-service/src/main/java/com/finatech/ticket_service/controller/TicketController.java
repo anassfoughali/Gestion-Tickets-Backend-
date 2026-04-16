@@ -40,6 +40,11 @@ public class TicketController {
         return ResponseEntity.ok(ticketService.getTicketsResolus());
     }
 
+    @GetMapping("/clotures")
+    public ResponseEntity<TicketsClouresDTO> getTicketsClotures() {
+        return ResponseEntity.ok(ticketService.getTicketsClotures());
+    }
+
     @GetMapping("/resolution")
     public ResponseEntity<TempsResolutionMoyenDTO> getTempsResolutionMoyen() {
         try {
@@ -67,4 +72,5 @@ public class TicketController {
             return ResponseEntity.status(500).build();
         }
     }
+
 }
