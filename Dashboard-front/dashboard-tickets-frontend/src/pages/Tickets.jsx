@@ -19,10 +19,7 @@ const toStr = (val) => {
   return String(val);
 };
 
-const isClosedStatus = (status = "") => {
-  const s = String(status).toLowerCase().trim();
-  return s.includes("clotur") || s.includes("ferm") || s.includes("resolu") || s.includes("closed");
-};
+const isClosedStatus = (status = "") => isCloture(status) || isResolu(status);
 
 const parseTicketDate = (value) => {
   if (!value) return null;

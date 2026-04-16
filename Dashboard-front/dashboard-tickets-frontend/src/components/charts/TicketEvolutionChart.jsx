@@ -74,7 +74,11 @@ const TicketEvolutionChart = ({ data = [], chartRef }) => {
       URL.revokeObjectURL(url);
       const imgData = canvas.toDataURL('image/png');
       const printWindow = window.open('', '_blank');
-      if (!printWindow) return;
+      if (!printWindow) {
+        // eslint-disable-next-line no-alert
+        alert("Le navigateur a bloqué la fenêtre popup. Veuillez autoriser les popups pour ce site.");
+        return;
+      }
       const scriptTag = 'script';
       printWindow.document.write(
         '<html><head><title>Evolution des tickets</title></head>' +
