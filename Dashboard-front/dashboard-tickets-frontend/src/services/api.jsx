@@ -21,11 +21,23 @@ const normalizeTicket = (t = {}) => ({
   client: pick(t.client, t.Client),
 });
 
-const normalizeDayStat = (d = {}) => ({
-  date: pick(d.date, d.day, d.jour),
-  total: Number(pick(d.total, d.count, d.nombre, d.crees) || 0),
-  clotures: Number(pick(d.clotures, d.closed, d.resolved) || 0),
-});
+const normalizeDayStat = (d = {}) => {
+  const countValue =
+    d.total ?? d.count ?? d.nombre ?? d.crees ??
+    d.nombreTickets ?? d.ticketCount ?? d.ticketsCount ??
+    d.nbTickets ?? d.nb ?? d.compteur ?? d.quantity ??
+    d.totalTickets ?? d.ticketsOuverts ?? d.created ?? 0;
+
+  const cloturesValue =
+    d.clotures ?? d.closed ?? d.resolved ?? d.nombreClotures ??
+    d.nbClotures ?? d.closedTickets ?? d.clotured ?? 0;
+
+  return {
+    date: d.date ?? d.day ?? d.jour ?? d.requestDate ?? '',
+    total: Number(countValue) || 0,
+    clotures: Number(cloturesValue) || 0,
+  };
+};
 
 api.interceptors.request.use(
   (config) => {
@@ -82,10 +94,15 @@ export const ticketsService = {
   getResolus:           () => api.get('/tickets/resolus'),         // → TicketsResolusDTO
   getTempsResolution:   () => api.get('/tickets/temps-resolution'),// → List<TempsResolutionDTO>
   getResolutionMoyenne: () => api.get('/tickets/resolution'),      // → TempsResolutionMoyenDTO
-  getStatsParJour:      () => api.get('/tickets/stats-par-jour').then((res) => ({
-    ...res,
-    data: Array.isArray(res.data) ? res.data.map(normalizeDayStat) : [],
-  })),
+  getStatsParJour:      () => api.get('/tickets/stats-par-jour').then((res) => {
+    if (process.env.NODE_ENV === 'development' && Array.isArray(res.data) && res.data.length > 0) {
+      console.log('[API] stats-par-jour raw sample:', JSON.stringify(res.data[0]));
+    }
+    return {
+      ...res,
+      data: Array.isArray(res.data) ? res.data.map(normalizeDayStat) : [],
+    };
+  }),
 };
 
 export const technicienService = {

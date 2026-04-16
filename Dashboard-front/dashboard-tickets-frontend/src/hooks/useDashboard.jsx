@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ticketsService } from '../services/api';
+import { ticketsService, slaService } from '../services/api';
 
 const isClosedStatus = (status = '') => {
   const s = String(status).toLowerCase().trim();
@@ -51,6 +51,7 @@ const useDashboard = () => {
         resolutionMoyenne,
         allTickets,
         parJour,
+        slaResult,
       ] =
         await Promise.all([
           ticketsService.getTotal(),             // → Long
@@ -61,6 +62,7 @@ const useDashboard = () => {
           ticketsService.getResolutionMoyenne(), // → TempsResolutionMoyenDTO
           ticketsService.getAll(),
           ticketsService.getStatsParJour(),
+          slaService.getStats().catch(() => ({ data: null })),
         ]);
 
       const tickets = Array.isArray(allTickets.data) ? allTickets.data : [];
@@ -85,13 +87,30 @@ const useDashboard = () => {
         .sort((a, b) => b.closedTickets - a.closedTickets)
         .slice(0, 5);
 
+      const clotures = tickets.filter((t) => {
+        const s = String(t?.status || '').toLowerCase().trim();
+        return s.includes('clotur') || s.includes('ferm');
+      }).length;
+
+      const rm = resolutionMoyenne.data;
+      const resolutionMoyenneValue =
+        typeof rm === 'number' ? rm :
+        (rm?.tempsMoyenHeures ?? rm?.tempsMoyen ?? rm?.avgResolutionTime ?? rm?.duree ?? rm?.value ?? null);
+
+      const slaRaw = slaResult?.data;
+      const slaCompliance =
+        typeof slaRaw === 'number' ? `${slaRaw}%` :
+        (slaRaw?.tauxConformite ?? slaRaw?.compliance ?? slaRaw?.slaCompliance ?? slaRaw?.taux ?? null);
+
       setStats({
         total:             total.data,
         ouverts:           ouverts.data.nombreTicketsOuverts,
         enCours:           enCours.data.nombreTicketsEnCours,
         resolus:           resolus.data.nombreTicketsResolus,
+        clotures,
         tempsResolution:   tempsResolution.data,   // liste par technicien
-        resolutionMoyenne: resolutionMoyenne.data, // temps moyen global
+        resolutionMoyenne: resolutionMoyenneValue, // temps moyen global (number or null)
+        slaCompliance,
         parJour:           Array.isArray(parJour.data) ? parJour.data : [],
         ticketsRecents,
         topTechniciensCloture,
