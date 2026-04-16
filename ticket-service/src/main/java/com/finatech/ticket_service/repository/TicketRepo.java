@@ -177,3 +177,11 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
     List<Object[]> getTicketsComplets();
 
 }
+
+    // TODO: Ajouter méthode getTicketsParTechnicien()
+    // - @Query avec nativeQuery = true
+    // - SQL: JOIN MARISupportIssue avec MARISupportGroup sur SupportGroupID = GroupId
+    // - SELECT: g."Description" as technicien, COUNT(*) as nombreTickets
+    // - GROUP BY: g."Description"
+    // - ORDER BY: nombreTickets DESC
+    // - Retour: List<Object[]> avec [technicien, nombreTickets]

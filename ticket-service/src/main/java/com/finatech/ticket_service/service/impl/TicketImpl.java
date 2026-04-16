@@ -69,3 +69,10 @@ public class TicketImpl  implements TicketInterfaceService {
                 )).toList();
     }
 }
+
+// TODO: Implémenter getTicketsParTechnicien()
+// - Appeler ticketRepo.getTicketsParTechnicien()
+// - Mapper Object[] vers DTO avec stream().map()
+// - row[0] = technicien (String)
+// - row[1] = nombreTickets (Number) -> cast en long
+// - Retourner collect(Collectors.toList())

@@ -74,3 +74,10 @@ public class TicketController {
     }
 
 }
+
+// TODO: Ajouter endpoint GET /tickets-par-technicien
+// - @GetMapping("/tickets-par-technicien")
+// - ResponseEntity<List<TicketsParTechnicienDTO>>
+// - try/catch: return ResponseEntity.ok(data) ou status(500)
+// - Appeler ticketImpl.getTicketsParTechnicien()
+// - Javadoc: Retourne la liste des techniciens avec leur nombre de tickets
