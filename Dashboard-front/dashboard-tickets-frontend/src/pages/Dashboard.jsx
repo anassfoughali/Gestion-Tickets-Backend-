@@ -2,13 +2,13 @@ import React from "react";
 import Sidebar from "../components/layout/Sidebar";
 import Topbar  from "../components/layout/Topbar";
 import KpiCard from "../components/cards/KpiCard";
-import TicketsPerDayChart         from "../components/charts/TicketsPerDayChart";
+import TicketsPerDayChart  from "../components/charts/TicketsPerDayChart";
 import TechnicianPerformanceChart from "../components/charts/TechnicianPerformanceChart";
-import ResolutionTimeChart        from "../components/charts/ResolutionTimeChart";
+import ResolutionTimeChart  from "../components/charts/ResolutionTimeChart";
 import useDashboard from "../hooks/useDashboard";
 import {
   FiList, FiCheckCircle, FiClock,
-  FiAlertCircle, FiTrendingUp, FiRefreshCw, FiLock
+  FiAlertCircle, FiTrendingUp, FiRefreshCw
 } from "react-icons/fi";
 import { statusBadge, priorityBadge } from "../utils/statusHelpers";
 
@@ -44,9 +44,10 @@ const Dashboard = () => {
     </div>
   );
 
-  const parJour         = toArray(stats?.parJour);
-  const parTechnicien   = toArray(stats?.tempsResolution);
-  const ticketsRecents  = toArray(stats?.ticketsRecents);
+  const parJour  = toArray(stats?.parJour);
+  const parTechnicien = toArray(stats?.tempsResolution);
+  const topTechniciensCloture = toArray(stats?.topTechniciensCloture);
+  const ticketsRecents = toArray(stats?.ticketsRecents).slice(0, 6);
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -80,18 +81,18 @@ const Dashboard = () => {
 
           {/* KPI Cards */}
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
-            <KpiCard title="Total Tickets"  value={stats?.total}   subtitle="Total"         icon={<FiList />}        color="indigo" />
-            <KpiCard title="Ouverts"        value={stats?.ouverts} subtitle="En attente"    icon={<FiAlertCircle />} color="red"    />
-            <KpiCard title="En Cours"       value={stats?.enCours} subtitle="En traitement" icon={<FiClock />}       color="yellow" />
-            <KpiCard title="Résolus"        value={stats?.resolus} subtitle="Résolus"       icon={<FiCheckCircle />} color="green"  />
-            <KpiCard title="Temps Moyen"    value={stats?.resolutionMoyenne ? `${stats.resolutionMoyenne}h` : 'N/A'}
+            <KpiCard title="Total Tickets"  value={stats?.total}   subtitle="Total"  icon={<FiList />} color="indigo" />
+            <KpiCard title="Ouverts"  value={stats?.ouverts} subtitle="En attente" icon={<FiAlertCircle />} color="red"    />
+            <KpiCard title="En Cours" value={stats?.enCours} subtitle="En traitement" icon={<FiClock />} color="yellow" />
+            <KpiCard title="Résolus" value={stats?.resolus} subtitle="Résolus"  icon={<FiCheckCircle />} color="green"  />
+            <KpiCard title="Temps Moyen" value={stats?.resolutionMoyenne ? `${stats.resolutionMoyenne}h` : 'N/A'}
                      subtitle="Résolution"  icon={<FiTrendingUp />} color="blue" />
           </div>
 
           {/* Charts Row 1 */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <TicketsPerDayChart         data={parJour}       />
-            <TechnicianPerformanceChart data={parTechnicien} />
+            <TicketsPerDayChart data={parJour}   />
+            <TechnicianPerformanceChart data={topTechniciensCloture} metric="closed" />
           </div>
 
           {/* Charts Row 2 */}

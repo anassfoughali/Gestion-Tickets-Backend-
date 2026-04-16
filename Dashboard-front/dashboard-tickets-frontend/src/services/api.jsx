@@ -7,6 +7,38 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+const pick = (...values) => values.find((v) => v !== undefined && v !== null);
+
+const normalizeTicket = (t = {}) => ({
+  issueID: pick(t.issueID, t.issueId, t.IssueId, t.IssueID),
+  briefDescription: pick(t.briefDescription, t.object, t.description, t.Description),
+  technicien: pick(t.technicien, t.technician, t.description, t.Description),
+  status: pick(t.status, t.Status),
+  priority: pick(t.priority, t.priorite, t.Priorite),
+  requestDate: pick(t.requestDate, t.date_reception, t.dateReception, t.request_date),
+  closeDate: pick(t.closeDate, t.date_cloture, t.dateCloture),
+  resolutionDuration: pick(t.resolutionDuration, t.duree_resolution, t['durée_resolution']),
+  client: pick(t.client, t.Client),
+});
+
+const normalizeDayStat = (d = {}) => {
+  const countValue =
+    d.total ?? d.count ?? d.nombre ?? d.crees ??
+    d.nombreTickets ?? d.ticketCount ?? d.ticketsCount ??
+    d.nbTickets ?? d.nb ?? d.compteur ?? d.quantity ??
+    d.totalTickets ?? d.ticketsOuverts ?? d.created ?? 0;
+
+  const cloturesValue =
+    d.clotures ?? d.closed ?? d.resolved ?? d.nombreClotures ??
+    d.nbClotures ?? d.closedTickets ?? d.clotured ?? 0;
+
+  return {
+    date: d.date ?? d.day ?? d.jour ?? d.requestDate ?? '',
+    total: Number(countValue) || 0,
+    clotures: Number(cloturesValue) || 0,
+  };
+};
+
 api.interceptors.request.use(
   (config) => {
     const token = sessionStorage.getItem('jwt_token');
@@ -52,14 +84,25 @@ export const authService = {
 };
 
 export const ticketsService = {
-  getAll:               () => api.get('/tickets'),
+  getAll:               () => api.get('/tickets/list').then((res) => ({
+    ...res,
+    data: Array.isArray(res.data) ? res.data.map(normalizeTicket) : [],
+  })),
   getTotal:             () => api.get('/tickets/total'),           // → Long
   getOuverts:           () => api.get('/tickets/ouverts'),         // → TicketsOuvertsDTO
   getEnCours:           () => api.get('/tickets/en-cours'),        // → TicketsEnCoursDTO
   getResolus:           () => api.get('/tickets/resolus'),         // → TicketsResolusDTO
   getTempsResolution:   () => api.get('/tickets/temps-resolution'),// → List<TempsResolutionDTO>
   getResolutionMoyenne: () => api.get('/tickets/resolution'),      // → TempsResolutionMoyenDTO
-  getStatsParJour:      () => api.get('/tickets/stats-par-jour'),
+  getStatsParJour:      () => api.get('/tickets/stats-par-jour').then((res) => {
+    if (process.env.NODE_ENV === 'development' && Array.isArray(res.data) && res.data.length > 0) {
+      console.log('[API] stats-par-jour raw sample:', JSON.stringify(res.data[0]));
+    }
+    return {
+      ...res,
+      data: Array.isArray(res.data) ? res.data.map(normalizeDayStat) : [],
+    };
+  }),
 };
 
 export const technicienService = {
@@ -69,7 +112,10 @@ export const technicienService = {
 };
 
 export const rapportsService = {
-  getAll: () => api.get('/tickets'),
+  getAll: () => api.get('/tickets/list').then((res) => ({
+    ...res,
+    data: Array.isArray(res.data) ? res.data.map(normalizeTicket) : [],
+  })),
 };
 
 export const slaService = {
