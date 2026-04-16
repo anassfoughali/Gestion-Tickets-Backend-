@@ -8,7 +8,7 @@ import ResolutionTimeChart  from "../components/charts/ResolutionTimeChart";
 import useDashboard from "../hooks/useDashboard";
 import {
   FiList, FiCheckCircle, FiClock,
-  FiAlertCircle, FiTrendingUp, FiRefreshCw, FiLock
+  FiAlertCircle, FiTrendingUp, FiRefreshCw
 } from "react-icons/fi";
 import { statusBadge, priorityBadge } from "../utils/statusHelpers";
 
@@ -46,7 +46,8 @@ const Dashboard = () => {
 
   const parJour  = toArray(stats?.parJour);
   const parTechnicien = toArray(stats?.tempsResolution);
-  const ticketsRecents = toArray(stats?.ticketsRecents);
+  const topTechniciensCloture = toArray(stats?.topTechniciensCloture);
+  const ticketsRecents = toArray(stats?.ticketsRecents).slice(0, 6);
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -91,7 +92,7 @@ const Dashboard = () => {
           {/* Charts Row 1 */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <TicketsPerDayChart data={parJour}   />
-            <TechnicianPerformanceChart data={parTechnicien} />
+            <TechnicianPerformanceChart data={topTechniciensCloture} metric="closed" />
           </div>
 
           {/* Charts Row 2 */}
