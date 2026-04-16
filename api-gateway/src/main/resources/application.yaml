@@ -32,6 +32,10 @@ spring:
           uri: lb://ticket-service
           predicates:
             - Path=/api/**
+        - id: performance-service
+          uri: lb://performance-service
+          predicates:
+            - Path=/api/**
 
 server:
   port: 8080
