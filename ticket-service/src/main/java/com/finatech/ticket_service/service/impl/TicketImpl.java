@@ -69,12 +69,4 @@ public class TicketImpl  implements TicketInterfaceService {
                 )).toList();
     }
 
-    @Override
-    public long getTichnicien(int technicienId) {
-        return ticketRepo.countTicketsByTechnicien(technicienId);
-    }
 }
-
-// TODO: Implémenter getTicketsByTechnicien(int technicienId)
-// - Appeler ticketRepo.countTicketsByTechnicien(technicienId)
-// - Retourner new TicketsParTechnicienDTO(count)
