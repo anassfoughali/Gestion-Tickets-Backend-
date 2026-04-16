@@ -8,9 +8,9 @@ const BLUE = "#2784c1";
 const GRAY = "#a3a3a3";
 
 const Login = () => {
-  const [formData, setFormData]         = useState({ username: "", password: "" });
-  const [error, setError]               = useState("");
-  const [loading, setLoading]           = useState(false);
+  const [formData, setFormData]  = useState({ username: "", password: "" });
+  const [error, setError]  = useState("");
+  const [loading, setLoading]  = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const { login } = useAuth();
@@ -87,8 +87,8 @@ const Login = () => {
         <div className="relative z-10 flex gap-10 justify-center">
           {[
             { label: "Tickets traités", value: "500+" },
-            { label: "Techniciens",     value: "12"   },
-            { label: "Disponibilité",   value: "99%"  },
+            { label: "Techniciens",  value: "12"   },
+            { label: "Disponibilité",  value: "99%"  },
           ].map((s) => (
             <div key={s.label} className="text-center">
               <p className="text-3xl font-black text-white">{s.value}</p>

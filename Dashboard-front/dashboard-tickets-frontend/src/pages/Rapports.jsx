@@ -98,10 +98,10 @@ const Rapports = () => {
           {/* Summary KPI cards */}
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             {[
-              { label: "Total",    value: total,   bg: "bg-blue-50",   color: BLUE      },
-              { label: "Ouverts",  value: ouverts, bg: "bg-red-50",    color: "#ef4444" },
+              { label: "Total",  value: total, bg: "bg-blue-50", color: BLUE  },
+              { label: "Ouverts",  value: ouverts, bg: "bg-red-50", color: "#ef4444" },
               { label: "En Cours", value: enCours, bg: "bg-amber-50",  color: "#f59e0b" },
-              { label: "Résolus",  value: resolus, bg: "bg-emerald-50",color: "#10b981" },
+              { label: "Résolus", value: resolus, bg: "bg-emerald-50",color: "#10b981" },
             ].map((k) => (
               <div key={k.label} className="p-5 bg-white border border-gray-100 shadow-sm rounded-xl">
                 <p className="text-xs font-medium tracking-wide text-gray-500 uppercase">{k.label}</p>
