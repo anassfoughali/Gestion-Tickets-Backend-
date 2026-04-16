@@ -1,5 +1,4 @@
 package com.finatech.ticket_service.service;
-
 import com.finatech.ticket_service.dto.TempsResolutionDTO;
 import com.finatech.ticket_service.dto.TicketsEnCoursDTO;
 import com.finatech.ticket_service.dto.TicketsOuvertsDTO;
@@ -10,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 public class TicketService {
@@ -42,9 +40,9 @@ public class TicketService {
         return ticketRepo.count();
     }
 
-    //  API  — Tickets résolus — SQL natif
+    //  API  — Tickets résolus (basé sur date de clôture) — SQL natif
     public TicketsResolusDTO getTicketsResolus() {
-        return new TicketsResolusDTO(ticketRepo.countTicketsResolus());
+        return new TicketsResolusDTO(ticketRepo.countTicketsClotures());
     }
 
     //  API  — Tickets clôturés — SQL natif

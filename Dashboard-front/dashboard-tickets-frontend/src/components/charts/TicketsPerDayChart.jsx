@@ -15,7 +15,7 @@ const TicketsPerDayChart = ({ data = [] }) => {
 
   const chartData = data.map((d) => ({
     label: d.date || d.jour || d.day || '',
-    count: d.count || d.nombre || d.total || 0,
+    count: Number(d.total ?? d.count ?? d.nombre ?? 0),
   }));
 
   return (

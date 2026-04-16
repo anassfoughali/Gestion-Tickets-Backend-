@@ -4,10 +4,23 @@ import Topbar  from "../components/layout/Topbar";
 import useTickets from "../hooks/useTickets";
 import KpiCard from "../components/cards/KpiCard";
 import TicketEvolutionChart from "../components/charts/TicketEvolutionChart";
-import { statusBadge, priorityBadge } from "../utils/statusHelpers";
-import { FiRefreshCw, FiDownload, FiList, FiCheckCircle, FiClock, FiAlertCircle, FiTrendingUp } from "react-icons/fi";
+import {
+  statusBadge,
+  priorityBadge,
+  isCloture,
+  isResolu,
+  isEnCours,
+  isOuvert,
+  normalizePriority,
+  priorityLabel,
+} from "../utils/statusHelpers";
+import {
+  FiRefreshCw, FiDownload, FiList, FiCheckCircle, FiClock,
+  FiAlertCircle, FiTrendingUp, FiChevronLeft, FiChevronRight
+} from "react-icons/fi";
 
 const BLUE = "#2784c1";
+const ROWS_PER_PAGE = 10;
 
 const toStr = (val) => {
   if (val === null || val === undefined) return "—";
@@ -15,18 +28,7 @@ const toStr = (val) => {
   return String(val);
 };
 
-const isClosedStatus = (status = "") => {
-  const s = String(status).toLowerCase().trim();
-  return s.includes("clotur") || s.includes("ferm") || s.includes("resolu") || s.includes("closed");
-};
-
-const getStatusGroup = (status = "") => {
-  const s = String(status).toLowerCase().trim();
-  if (isClosedStatus(s)) return "closed";
-  if (s.includes("ouvert") || s.includes("nouveau")) return "open";
-  if (s.includes("cours") || s.includes("affect") || s.includes("attente") || s.includes("escalad")) return "inProgress";
-  return "other";
-};
+const isClosedStatus = (status = "") => isCloture(status) || isResolu(status);
 
 const parseTicketDate = (value) => {
   if (!value) return null;
@@ -54,39 +56,57 @@ const toDayKey = (date) => {
 
 const toDayLabel = (date) => `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}`;
 
+const FILTERS = [
+  { key: "tous",    label: "Tous" },
+  { key: "resolu",  label: "🟢 Résolus" },
+  { key: "cloture", label: "🔵 Clôturés" },
+  { key: "ouvert",  label: "🔴 Ouverts" },
+  { key: "encours", label: "🟡 En Cours" },
+];
+
+const PRIORITY_FILTERS = [
+  { key: "tous", label: "Toutes priorites" },
+  { key: "critique", label: "Critique" },
+  { key: "majeur", label: "Majeur" },
+  { key: "mineur", label: "Mineur" },
+];
+
 const Tickets = () => {
-  const [statusFilter, setStatusFilter] = React.useState("ALL");
+  const [activeFilter, setActiveFilter] = React.useState("tous");
+  const [activePriorityFilter, setActivePriorityFilter] = React.useState("tous");
   const [currentPage, setCurrentPage] = React.useState(1);
   const { tickets, loading, error, refresh } = useTickets();
+  const chartRef = React.useRef(null);
 
-  const uniqueStatuses = React.useMemo(() => {
-    const set = new Set();
-    tickets.forEach((t) => {
-      if (t?.status) set.add(String(t.status));
-    });
-    return ["ALL", ...Array.from(set).sort((a, b) => a.localeCompare(b))];
-  }, [tickets]);
+  const filteredByStatus = React.useMemo(() => {
+    switch (activeFilter) {
+      case "resolu":  return tickets.filter((t) => isResolu(t?.status));
+      case "cloture": return tickets.filter((t) => isCloture(t?.status));
+      case "ouvert":  return tickets.filter((t) => isOuvert(t?.status));
+      case "encours": return tickets.filter((t) => isEnCours(t?.status));
+      default:        return tickets;
+    }
+  }, [tickets, activeFilter]);
 
   const filteredTickets = React.useMemo(() => {
-    if (statusFilter === "ALL") return tickets;
-    return tickets.filter((t) => String(t?.status || "") === statusFilter);
-  }, [tickets, statusFilter]);
+    if (activePriorityFilter === "tous") return filteredByStatus;
+    return filteredByStatus.filter((t) => normalizePriority(t?.priority) === activePriorityFilter);
+  }, [filteredByStatus, activePriorityFilter]);
 
   const stats = React.useMemo(() => {
     return filteredTickets.reduce(
       (acc, t) => {
-        const group = getStatusGroup(t?.status);
-        if (group === "closed") acc.closed += 1;
-        else if (group === "open") acc.open += 1;
-        else if (group === "inProgress") acc.inProgress += 1;
-        else acc.other += 1;
+        if (isCloture(t?.status)) acc.closed += 1;
+        else if (isResolu(t?.status)) acc.resolved += 1;
+        else if (isOuvert(t?.status)) acc.open += 1;
+        else if (isEnCours(t?.status)) acc.inProgress += 1;
         return acc;
       },
-      { total: filteredTickets.length, open: 0, inProgress: 0, closed: 0, other: 0 }
+      { total: filteredTickets.length, open: 0, inProgress: 0, closed: 0, resolved: 0 }
     );
   }, [filteredTickets]);
 
-  const closureRate = stats.total > 0 ? `${Math.round((stats.closed / stats.total) * 100)}%` : "0%";
+  const closureRate = stats.total > 0 ? `${Math.round(((stats.closed + stats.resolved) / stats.total) * 100)}%` : "0%";
 
   const monthlyEvolution = React.useMemo(() => {
     const today = new Date();
@@ -116,32 +136,38 @@ const Tickets = () => {
     return days;
   }, [tickets]);
 
-  const ITEMS_PER_PAGE = 10;
-  const totalPages = Math.max(1, Math.ceil(filteredTickets.length / ITEMS_PER_PAGE));
+  const totalPages = Math.max(1, Math.ceil(filteredTickets.length / ROWS_PER_PAGE));
 
   React.useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(1);
   }, [currentPage, totalPages]);
 
   const paginatedTickets = React.useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredTickets.slice(start, start + ITEMS_PER_PAGE);
+    const start = (currentPage - 1) * ROWS_PER_PAGE;
+    return filteredTickets.slice(start, start + ROWS_PER_PAGE);
   }, [filteredTickets, currentPage]);
 
-  const handleReanalyze = () => {
-    setCurrentPage(1);
-    refresh();
+  const getPageNumbers = () => {
+    const pages = [];
+    for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i += 1) {
+      pages.push(i);
+    }
+    return pages;
   };
 
   const handleExportExcel = () => {
-    const headers = ["IssueID", "Description", "Statut", "Priorite", "Technicien", "Date"];
+    const headers = ["N° Ticket", "Objet", "Client", "Technicien", "Type", "Priorité", "Statut", "Date Création", "Date Clôture", "Durée (h)"];
     const rows = filteredTickets.map((t) => [
       toStr(t.issueID),
       toStr(t.briefDescription),
-      toStr(t.status),
-      toStr(t.priority),
+      toStr(t.cardName),
       toStr(t.technicien),
+      toStr(t.issueType),
+      priorityLabel(t.priority),
+      toStr(t.status),
       toStr(t.requestDate),
+      toStr(t.dateCloture),
+      toStr(t.duree),
     ]);
 
     const tableRows = [headers, ...rows]
@@ -159,7 +185,7 @@ const Tickets = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `tickets-performance-${new Date().toISOString().slice(0, 10)}.xls`;
+    link.download = `tickets-${new Date().toISOString().slice(0, 10)}.xls`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -198,18 +224,63 @@ const Tickets = () => {
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold text-gray-800">Tickets Performance</h1>
-              <p className="text-sm text-gray-500">KPI, analyse et evolution des tickets</p>
+              <h1 className="text-xl font-bold text-gray-800">Tickets</h1>
+              <p className="text-sm text-gray-500">Liste et analyse des tickets</p>
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleReanalyze}
-                className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-white rounded-lg shadow-sm transition"
-                style={{ backgroundColor: BLUE }}
-              >
-                <FiRefreshCw size={14} />
-                Reanalyser les donnees
-              </button>
+            <button
+              onClick={refresh}
+              className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-white rounded-lg shadow-sm transition"
+              style={{ backgroundColor: BLUE }}
+            >
+              <FiRefreshCw size={14} />
+              Actualiser
+            </button>
+          </div>
+
+          {/* KPI Cards */}
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
+            <KpiCard title="Total Tickets" value={stats.total}     subtitle="Sélection courante" icon={<FiList />}        color="indigo" />
+            <KpiCard title="Ouverts"       value={stats.open}      subtitle="À traiter"           icon={<FiAlertCircle />} color="red"    />
+            <KpiCard title="En Cours"      value={stats.inProgress} subtitle="Traitement"         icon={<FiClock />}       color="yellow" />
+            <KpiCard title="Résolus"       value={stats.resolved}  subtitle="Terminés"            icon={<FiCheckCircle />} color="green"  />
+            <KpiCard title="Taux Clôture"  value={closureRate}     subtitle="Sur sélection"       icon={<FiTrendingUp />}  color="blue"   />
+          </div>
+
+          {/* Table */}
+          <div className="p-5 bg-white border border-gray-100 shadow-sm rounded-xl">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+              {/* Filter pills */}
+              <div className="flex flex-wrap gap-2">
+                {FILTERS.map((f) => (
+                  <button
+                    key={f.key}
+                    onClick={() => { setActiveFilter(f.key); setCurrentPage(1); }}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-full transition ${
+                      activeFilter === f.key
+                        ? "bg-indigo-600 text-white"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {PRIORITY_FILTERS.map((f) => (
+                  <button
+                    key={f.key}
+                    onClick={() => { setActivePriorityFilter(f.key); setCurrentPage(1); }}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-full transition ${
+                      activePriorityFilter === f.key
+                        ? "bg-[#0B1F3A] text-white"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+              {/* Export button */}
               <button
                 onClick={handleExportExcel}
                 className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-white rounded-lg shadow-sm transition"
@@ -219,37 +290,7 @@ const Tickets = () => {
                 Export Excel
               </button>
             </div>
-          </div>
 
-          {/* KPI Cards */}
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
-            <KpiCard title="Total Tickets" value={stats.total} subtitle="Selection courante" icon={<FiList />} color="indigo" />
-            <KpiCard title="Ouverts" value={stats.open} subtitle="A traiter" icon={<FiAlertCircle />} color="red" />
-            <KpiCard title="En Cours" value={stats.inProgress} subtitle="Traitement" icon={<FiClock />} color="yellow" />
-            <KpiCard title="Clotures" value={stats.closed} subtitle="Termines" icon={<FiCheckCircle />} color="green" />
-            <KpiCard title="Taux Cloture" value={closureRate} subtitle="Sur selection" icon={<FiTrendingUp />} color="blue" />
-          </div>
-
-          {/* Table */}
-          <div className="p-5 bg-white border border-gray-100 shadow-sm rounded-xl">
-            <div className="flex flex-col gap-3 mb-4 md:flex-row md:items-end md:justify-between">
-              <h3 className="text-sm font-semibold text-gray-700">Detail des tickets</h3>
-              <div>
-                <label className="block mb-1 text-xs font-medium tracking-wide text-gray-500 uppercase">Filtrer par statut</label>
-                <select
-                  value={statusFilter}
-                  onChange={(e) => {
-                    setStatusFilter(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                  className="px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-[#2784c1]/30"
-                >
-                  {uniqueStatuses.map((s) => (
-                    <option key={s} value={s}>{s === "ALL" ? "Tous" : s}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
             {tickets.length === 0 ? (
               <p className="py-12 text-sm text-center text-gray-400">Aucun ticket disponible</p>
             ) : (
@@ -257,12 +298,16 @@ const Tickets = () => {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="text-xs text-gray-400 uppercase border-b">
-                      <th className="pb-3 font-medium text-left">IssueID</th>
-                      <th className="pb-3 font-medium text-left">Description</th>
-                      <th className="pb-3 font-medium text-left">Statut</th>
-                      <th className="pb-3 font-medium text-left">Priorité</th>
+                      <th className="pb-3 font-medium text-left">N° Ticket</th>
+                      <th className="pb-3 font-medium text-left">Objet</th>
+                      <th className="pb-3 font-medium text-left">Client</th>
                       <th className="pb-3 font-medium text-left">Technicien</th>
-                      <th className="pb-3 font-medium text-left">Date</th>
+                      <th className="pb-3 font-medium text-left">Type</th>
+                      <th className="pb-3 font-medium text-left">Priorité</th>
+                      <th className="pb-3 font-medium text-left">Statut</th>
+                      <th className="pb-3 font-medium text-left">Date Création</th>
+                      <th className="pb-3 font-medium text-left">Date Clôture</th>
+                      <th className="pb-3 font-medium text-left">Durée (h)</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
@@ -271,21 +316,23 @@ const Tickets = () => {
                         <td className="py-3 font-mono text-xs font-semibold" style={{ color: BLUE }}>
                           {toStr(t.issueID)}
                         </td>
-                        <td className="max-w-xs py-3 text-gray-700 truncate">
-                          {toStr(t.briefDescription)}
+                        <td className="max-w-xs py-3 text-gray-700 truncate">{toStr(t.briefDescription)}</td>
+                        <td className="py-3 text-xs text-gray-500">{toStr(t.cardName)}</td>
+                        <td className="py-3 text-xs text-gray-500">{toStr(t.technicien)}</td>
+                        <td className="py-3 text-xs text-gray-500">{toStr(t.issueType)}</td>
+                        <td className="py-3">
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${priorityBadge(t.priority)}`}>
+                            {priorityLabel(t.priority)}
+                          </span>
                         </td>
                         <td className="py-3">
                           <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusBadge(t.status)}`}>
                             {toStr(t.status)}
                           </span>
                         </td>
-                        <td className="py-3">
-                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${priorityBadge(t.priority)}`}>
-                            {toStr(t.priority)}
-                          </span>
-                        </td>
-                        <td className="py-3 text-xs text-gray-500">{toStr(t.technicien)}</td>
                         <td className="py-3 text-xs text-gray-400">{toStr(t.requestDate)}</td>
+                        <td className="py-3 text-xs text-gray-400">{toStr(t.dateCloture)}</td>
+                        <td className="py-3 text-xs text-gray-400">{toStr(t.duree)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -293,32 +340,45 @@ const Tickets = () => {
               </div>
             )}
 
+            {/* Pagination */}
             <div className="flex items-center justify-between pt-4 mt-4 border-t border-gray-100">
               <p className="text-xs text-gray-500">
-                Affichage {(filteredTickets.length === 0) ? 0 : ((currentPage - 1) * ITEMS_PER_PAGE + 1)}-
-                {Math.min(currentPage * ITEMS_PER_PAGE, filteredTickets.length)} sur {filteredTickets.length} tickets
+                Affichage {filteredTickets.length === 0 ? 0 : (currentPage - 1) * ROWS_PER_PAGE + 1}–
+                {Math.min(currentPage * ROWS_PER_PAGE, filteredTickets.length)} sur {filteredTickets.length}
               </p>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <button
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="px-3 py-1 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-lg disabled:opacity-50"
+                  className="p-1.5 text-gray-500 bg-white border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
                 >
-                  Precedent
+                  <FiChevronLeft size={14} />
                 </button>
-                <span className="text-xs text-gray-500">Page {currentPage}/{totalPages}</span>
+                {getPageNumbers().map((n) => (
+                  <button
+                    key={n}
+                    onClick={() => setCurrentPage(n)}
+                    className={`w-7 h-7 text-xs font-medium rounded-lg transition ${
+                      n === currentPage
+                        ? "bg-indigo-600 text-white"
+                        : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                    }`}
+                  >
+                    {n}
+                  </button>
+                ))}
                 <button
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-1 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-lg disabled:opacity-50"
+                  className="p-1.5 text-gray-500 bg-white border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
                 >
-                  Suivant
+                  <FiChevronRight size={14} />
                 </button>
               </div>
             </div>
           </div>
 
-          <TicketEvolutionChart data={monthlyEvolution} />
+          <TicketEvolutionChart data={monthlyEvolution} chartRef={chartRef} />
 
         </main>
       </div>

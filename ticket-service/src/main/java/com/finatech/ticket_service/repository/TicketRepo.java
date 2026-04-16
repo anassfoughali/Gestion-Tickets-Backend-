@@ -2,6 +2,7 @@ package com.finatech.ticket_service.repository;
 import com.finatech.ticket_service.model.Ticket;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
@@ -147,8 +148,8 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
             t."BriefDescription" AS object,
             g."Description" AS Description,
             
-            s_status."Description" AS Status,
-            s_priority."Description" AS Priorite,
+            s_status."Matchcode" AS Status,
+            s_priority."Matchcode" AS Priorite,
             
             t."USER_DateReceptionEmail" AS date_reception,
             t."USER_DateCloture" AS date_cloture,

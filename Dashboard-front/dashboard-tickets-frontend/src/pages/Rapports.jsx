@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import Sidebar from "../components/layout/Sidebar";
 import Topbar  from "../components/layout/Topbar";
 import { rapportsService } from "../services/api";
-import { statusBadge, priorityBadge } from "../utils/statusHelpers";
+import { statusBadge, priorityBadge, priorityLabel } from "../utils/statusHelpers";
 import { FiRefreshCw } from "react-icons/fi";
 
 const BLUE = "#2784c1";
@@ -144,7 +144,7 @@ const Rapports = () => {
                         </td>
                         <td className="py-3">
                           <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${priorityBadge(t.priority)}`}>
-                            {toStr(t.priority)}
+                            {priorityLabel(t.priority)}
                           </span>
                         </td>
                         <td className="py-3 text-xs text-gray-500">{toStr(t.technicien)}</td>
