@@ -8,6 +8,7 @@ const colorMap = {
     yellow: 'bg-amber-500',
     blue:   'bg-blue-500',
     teal:   'bg-teal-500',
+    indigo: 'bg-indigo-500',
 };
 
 const KpiCard = ({ title, value, icon, color, subtitle }) => (

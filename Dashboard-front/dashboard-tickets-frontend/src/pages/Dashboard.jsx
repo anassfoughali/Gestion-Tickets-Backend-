@@ -8,7 +8,8 @@ import ResolutionTimeChart  from "../components/charts/ResolutionTimeChart";
 import useDashboard from "../hooks/useDashboard";
 import {
   FiList, FiCheckCircle, FiClock,
-  FiAlertCircle, FiTrendingUp, FiRefreshCw
+  FiAlertCircle, FiTrendingUp, FiRefreshCw,
+  FiLock, FiShield
 } from "react-icons/fi";
 import { statusBadge, priorityBadge } from "../utils/statusHelpers";
 
@@ -80,13 +81,14 @@ const Dashboard = () => {
           </div>
 
           {/* KPI Cards */}
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
-            <KpiCard title="Total Tickets"  value={stats?.total}   subtitle="Total"  icon={<FiList />} color="indigo" />
-            <KpiCard title="Ouverts"  value={stats?.ouverts} subtitle="En attente" icon={<FiAlertCircle />} color="red"    />
-            <KpiCard title="En Cours" value={stats?.enCours} subtitle="En traitement" icon={<FiClock />} color="yellow" />
-            <KpiCard title="Résolus" value={stats?.resolus} subtitle="Résolus"  icon={<FiCheckCircle />} color="green"  />
-            <KpiCard title="Temps Moyen" value={stats?.resolutionMoyenne ? `${stats.resolutionMoyenne}h` : 'N/A'}
-                     subtitle="Résolution"  icon={<FiTrendingUp />} color="blue" />
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
+            <KpiCard title="Total Tickets"  value={stats?.total}            subtitle="Total"         icon={<FiList />}        color="indigo" />
+            <KpiCard title="Ouverts"        value={stats?.ouverts}          subtitle="En attente"    icon={<FiAlertCircle />} color="red"    />
+            <KpiCard title="Résolus"        value={stats?.resolus}          subtitle="Clôturés"      icon={<FiCheckCircle />} color="green"  />
+            <KpiCard title="Clôturés"       value={stats?.clotures}         subtitle="Clôturés"      icon={<FiLock />}        color="blue"   />
+            <KpiCard title="En Cours"       value={stats?.enCours}          subtitle="En traitement" icon={<FiClock />}       color="yellow" />
+            <KpiCard title="Temps Moyen"    value={stats?.resolutionMoyenne ? `${stats.resolutionMoyenne}h` : 'N/A'} subtitle="Résolution" icon={<FiTrendingUp />} color="blue" />
+            <KpiCard title="SLA"            value={stats?.slaCompliance}    subtitle="Conformité"    icon={<FiShield />}      color="teal"   />
           </div>
 
           {/* Charts Row 1 */}
