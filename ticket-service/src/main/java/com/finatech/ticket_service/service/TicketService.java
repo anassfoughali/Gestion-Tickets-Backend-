@@ -4,6 +4,7 @@ import com.finatech.ticket_service.dto.TempsResolutionDTO;
 import com.finatech.ticket_service.dto.TicketsEnCoursDTO;
 import com.finatech.ticket_service.dto.TicketsOuvertsDTO;
 import com.finatech.ticket_service.dto.TicketsResolusDTO;
+import com.finatech.ticket_service.dto.TicketsClouresDTO;
 import com.finatech.ticket_service.repository.TicketRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,5 +45,10 @@ public class TicketService {
     //  API  — Tickets résolus — SQL natif
     public TicketsResolusDTO getTicketsResolus() {
         return new TicketsResolusDTO(ticketRepo.countTicketsResolus());
+    }
+
+    //  API  — Tickets clôturés — SQL natif
+    public TicketsClouresDTO getTicketsClotures() {
+        return new TicketsClouresDTO(ticketRepo.countTicketsClotures());
     }
 }

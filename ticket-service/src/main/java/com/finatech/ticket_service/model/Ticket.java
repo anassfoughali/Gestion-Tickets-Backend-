@@ -18,6 +18,10 @@ public class Ticket {
     @Column(name = "\"IssueID\"")
     private int id;
 
+    @Column(name = "\"AddressMatchcode\"")
+    private String client ;
+
+
     @Column(name = "\"USER_DateCloture\"")
     private String date_cloture;
 

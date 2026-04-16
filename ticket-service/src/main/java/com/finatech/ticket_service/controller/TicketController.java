@@ -1,16 +1,10 @@
 package com.finatech.ticket_service.controller;
-
-import com.finatech.ticket_service.dto.TempsResolutionDTO;
-import com.finatech.ticket_service.dto.TempsResolutionMoyenDTO;
-import com.finatech.ticket_service.dto.TicketsEnCoursDTO;
-import com.finatech.ticket_service.dto.TicketsOuvertsDTO;
-import com.finatech.ticket_service.dto.TicketsResolusDTO;
+import com.finatech.ticket_service.dto.*;
 import com.finatech.ticket_service.service.TicketService;
 import com.finatech.ticket_service.service.impl.TicketImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -46,6 +40,11 @@ public class TicketController {
         return ResponseEntity.ok(ticketService.getTicketsResolus());
     }
 
+    @GetMapping("/clotures")
+    public ResponseEntity<TicketsClouresDTO> getTicketsClotures() {
+        return ResponseEntity.ok(ticketService.getTicketsClotures());
+    }
+
     @GetMapping("/resolution")
     public ResponseEntity<TempsResolutionMoyenDTO> getTempsResolutionMoyen() {
         try {
@@ -54,4 +53,24 @@ public class TicketController {
             return ResponseEntity.status(500).build();
         }
     }
+
+    @GetMapping("/stats-par-jour")
+    public ResponseEntity<List<TicketEvolutionParJourDTO>> getEvolutionTicket(){
+        try {
+            List<TicketEvolutionParJourDTO> data = ticketImpl.getEvolutionParJour() ;
+            return ResponseEntity.ok(data) ;
+        }catch (Exception e){
+            return ResponseEntity.status(500).build();
+        }
+    }
+    @GetMapping("/list")
+    public ResponseEntity<List<TicketCompletDTO>> getTicketsDetails(){
+        try{
+            List<TicketCompletDTO> tickets = ticketImpl.getTicketDetails();
+            return ResponseEntity.ok(tickets);
+        }catch (Exception e ){
+            return ResponseEntity.status(500).build();
+        }
+    }
+
 }

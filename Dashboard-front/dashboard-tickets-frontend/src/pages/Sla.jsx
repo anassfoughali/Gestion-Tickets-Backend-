@@ -9,10 +9,10 @@ import {
 } from "recharts";
 import { FiShield, FiCheckCircle, FiAlertTriangle, FiClock, FiTrendingUp } from "react-icons/fi";
 
-const BLUE   = "#2784c1";
-const GREEN  = "#10b981";
+const BLUE = "#2784c1";
+const GREEN = "#10b981";
 const ORANGE = "#f59e0b";
-const RED    = "#ef4444";
+const RED = "#ef4444";
 
 // ── Gauge radiale pour le taux global SLA ──────────────
 const SlaGauge = ({ value = 0 }) => {
@@ -49,7 +49,7 @@ const SlaGauge = ({ value = 0 }) => {
 // ── Pie : répartition Conforme vs Non conforme ──────────
 const SlaRepartitionChart = ({ conforme = 0, nonConforme = 0 }) => {
   const data = [
-    { name: "Conforme",     value: conforme    },
+    { name: "Conforme", value: conforme },
     { name: "Non conforme", value: nonConforme },
   ];
   const COLORS = [GREEN, RED];
@@ -75,9 +75,9 @@ const SlaRepartitionChart = ({ conforme = 0, nonConforme = 0 }) => {
 // ── Bar : SLA par technicien ─────────────────────────────
 const SlaTechChart = ({ data = [] }) => {
   const normalized = data.map((d) => ({
-    name:       d.technicien || d.name || "N/A",
-    taux:       d.slaRate    || d.taux || 0,
-    conforme:   d.conforme   || 0,
+    name:d.technicien || d.name || "N/A",
+    taux:d.slaRate || d.taux || 0,
+    conforme:d.conforme || 0,
     nonConforme:d.nonConforme|| 0,
   }));
 
@@ -184,7 +184,7 @@ const Sla = () => {
   const horsSlaTick  = sla?.ticketsHorsSlaDetails ?? [];
 
   const kpis = [
-    { title: "Taux SLA Global",     value: `${tauxGlobal}%`,  icon: <FiShield />,       color: tauxGlobal >= 90 ? "green" : "orange" },
+    { title: "Taux SLA Global",value: `${tauxGlobal}%`,  icon: <FiShield />,       color: tauxGlobal >= 90 ? "green" : "orange" },
     { title: "Tickets Conformes",   value: conforme,           icon: <FiCheckCircle />,  color: "green"  },
     { title: "Tickets Hors SLA",    value: nonConforme,        icon: <FiAlertTriangle />,color: "red"    },
     { title: "Total Analysés",      value: totalTickets,       icon: <FiTrendingUp />,   color: "blue"   },

@@ -1,4 +1,25 @@
-﻿export const statusBadge = (status) => {
+export const isCloture = (status) => {
+  if (!status) return false;
+  const s = status.toLowerCase().trim();
+  return s.includes('clôturé') || s.includes('cloturé') || s.includes('clotur') || s.includes('ferm');
+};
+export const isResolu = (status) => {
+  if (!status) return false;
+  const s = status.toLowerCase().trim();
+  return s.includes('résolu') || s.includes('resolu');
+};
+export const isEnCours = (status) => {
+  if (!status) return false;
+  const s = status.toLowerCase().trim();
+  return s.includes('cours') || s.includes('affect') || s.includes('attente') || s.includes('escalad');
+};
+export const isOuvert = (status) => {
+  if (!status) return false;
+  const s = status.toLowerCase().trim();
+  return s.includes('ouvert') || s.includes('nouveau');
+};
+
+export const statusBadge = (status) => {
   if (!status) return "bg-gray-100 text-gray-600";
   const s = status.toLowerCase().trim();
   if (s.includes("cloture") || s.includes("ferm")) return "bg-blue-100 text-blue-700 border border-blue-200";
