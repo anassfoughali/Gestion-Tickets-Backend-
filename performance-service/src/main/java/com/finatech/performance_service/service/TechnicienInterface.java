@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 public interface TechnicienInterface {
 
     long getTechnicien(int technicienId);
+    long getTicketsResolus(int technicienId);
 }
 
     // TODO: Ajouter signature méthode
