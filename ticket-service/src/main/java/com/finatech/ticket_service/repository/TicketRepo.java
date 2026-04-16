@@ -157,7 +157,9 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
                 WHEN t."USER_DateCloture" IS NOT NULL AND t."USER_DateReceptionEmail" IS NOT NULL
                 THEN DAYS_BETWEEN(TO_DATE(t."USER_DateReceptionEmail", 'DD/MM/YYYY HH24:MI'), t."USER_DateCloture")
                 ELSE NULL
-            END AS duree_resolution
+            END AS duree_resolution,
+            
+            t."AddressMatchcode" AS client
 
         FROM "ZDEV_GP"."MARISupportIssue" t
 

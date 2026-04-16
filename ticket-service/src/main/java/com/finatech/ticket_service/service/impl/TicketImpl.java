@@ -57,14 +57,15 @@ public class TicketImpl  implements TicketInterfaceService {
         // Mapping vers DTO
         return ticketsComplets.stream()
                 .map(row-> new TicketCompletDTO(
-                        ((Number ) row[0]).intValue(),
-                        (String) row[1] ,
-                        (String) row[2] ,
-                        (String ) row[3] ,
-                        (String) row[4], // Les Dates sont transformer en String avec la méthode toString()
+                        ((Number ) row[0]).intValue(),  // IssueId
+                        (String) row[1],                 // object
+                        (String) row[2],                 // Description (technicien)
+                        (String) row[3],                 // Status
+                        (String) row[4],                 // Priorite
                         row[5] != null ? row[5].toString() : null,  // date_reception
                         row[6] != null ? row[6].toString() : null,  // date_cloture
-                        row[7] != null ? row[7].toString() : null
+                        row[7] != null ? row[7].toString() : null,  // duree_resolution
+                        (String) row[8]                  // client
                 )).toList();
     }
 }
