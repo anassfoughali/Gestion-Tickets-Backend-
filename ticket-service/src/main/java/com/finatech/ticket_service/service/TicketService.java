@@ -1,5 +1,4 @@
 package com.finatech.ticket_service.service;
-
 import com.finatech.ticket_service.dto.TempsResolutionDTO;
 import com.finatech.ticket_service.dto.TicketsEnCoursDTO;
 import com.finatech.ticket_service.dto.TicketsOuvertsDTO;
@@ -10,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 public class TicketService {
