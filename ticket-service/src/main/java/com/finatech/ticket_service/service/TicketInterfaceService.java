@@ -18,6 +18,6 @@ public interface TicketInterfaceService  {
 // - Javadoc simple
 
 // TODO: Ajouter signature méthode
-// - Import: TicketsParTechnicienDTO et List
-// - Méthode: List<TicketsParTechnicienDTO> getTicketsParTechnicien()
-// - Javadoc: Retourne le nombre de tickets assignés à chaque technicien
+// - Import: TicketsParTechnicienDTO
+// - Méthode: TicketsParTechnicienDTO getTicketsByTechnicien(int technicienId)
+// - Javadoc: Retourne le nombre de tickets pour un technicien spécifique

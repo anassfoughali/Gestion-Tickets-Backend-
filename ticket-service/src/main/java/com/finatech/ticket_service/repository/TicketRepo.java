@@ -2,6 +2,7 @@ package com.finatech.ticket_service.repository;
 import com.finatech.ticket_service.model.Ticket;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
@@ -176,12 +177,15 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
         """, nativeQuery = true)
     List<Object[]> getTicketsComplets();
 
-}
 
-    // TODO: Ajouter méthode getTicketsParTechnicien()
-    // - @Query avec nativeQuery = true
-    // - SQL: JOIN MARISupportIssue avec MARISupportGroup sur SupportGroupID = GroupId
-    // - SELECT: g."Description" as technicien, COUNT(*) as nombreTickets
-    // - GROUP BY: g."Description"
-    // - ORDER BY: nombreTickets DESC
-    // - Retour: List<Object[]> avec [technicien, nombreTickets]
+
+ 
+    // API - Nombre de tickets pour un technicien spécifique - SQL natif
+    @Query(value = """
+        SELECT COUNT(i."IssueID")
+        FROM "ZDEV_GP"."MARISupportIssue" i
+        WHERE i."SupportGroupID" = :technicienId
+        """, nativeQuery = true)
+    long countTicketsByTechnicien(@Param("technicienId") int technicienId);
+
+}
