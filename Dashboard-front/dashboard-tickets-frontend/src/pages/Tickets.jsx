@@ -36,10 +36,13 @@ const parseTicketDate = (value) => {
   if (!Number.isNaN(d1.getTime())) return d1;
 
   if (typeof value === "string") {
-    const m = value.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+    // Handle "dd/mm/yyyy", "dd/mm/yyyy HH:mm", "dd-mm-yyyy HH:mm", etc.
+    const m = value.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})(?:[\s,T]+(\d{1,2}):(\d{2}))?/);
     if (m) {
-      const [, dd, mm, yyyy] = m;
-      const d2 = new Date(`${yyyy}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}T00:00:00`);
+      const [, dd, mm, yyyy, hh = "00", min = "00"] = m;
+      const d2 = new Date(
+        `${yyyy}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}T${hh.padStart(2, "0")}:${min.padStart(2, "0")}:00`
+      );
       if (!Number.isNaN(d2.getTime())) return d2;
     }
   }
@@ -109,14 +112,20 @@ const Tickets = () => {
   const closureRate = stats.total > 0 ? `${Math.round(((stats.closed + stats.resolved) / stats.total) * 100)}%` : "0%";
 
   const monthlyEvolution = React.useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Anchor the window to the latest ticket date so data from 2024-2025 is always visible
+    let anchor = new Date(0);
+    tickets.forEach((t) => {
+      const d = parseTicketDate(t?.requestDate);
+      if (d && !Number.isNaN(d.getTime()) && d > anchor) anchor = d;
+    });
+    if (anchor.getTime() === 0) anchor = new Date();
+    anchor.setHours(0, 0, 0, 0);
 
     const days = [];
     const dayMap = {};
     for (let i = 29; i >= 0; i -= 1) {
-      const d = new Date(today);
-      d.setDate(today.getDate() - i);
+      const d = new Date(anchor);
+      d.setDate(anchor.getDate() - i);
       const key = toDayKey(d);
       const row = { dayKey: key, dayLabel: toDayLabel(d), totalTickets: 0, closedTickets: 0 };
       days.push(row);
@@ -125,7 +134,7 @@ const Tickets = () => {
 
     tickets.forEach((t) => {
       const d = parseTicketDate(t?.requestDate);
-      if (!d) return;
+      if (!d || Number.isNaN(d.getTime())) return;
       d.setHours(0, 0, 0, 0);
       const row = dayMap[toDayKey(d)];
       if (!row) return;
