@@ -17,7 +17,7 @@ public class TechnienController {
         return service.getTechnicien(technicienId);
     }
 
-    @GetMapping(" /{technicienId}/resolus")
+    @GetMapping("/{technicienId}/resolus")
     public long getTicketResolue(@PathVariable int technicienId) {
         return service.getTicketsResolus(technicienId);
     }
