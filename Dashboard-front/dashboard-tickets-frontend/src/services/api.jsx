@@ -15,10 +15,10 @@ const normalizeTicket = (t = {}) => ({
   issueID: pick(t.IssueId, t.issueID, t.issueId, t.IssueID),
   // Brief description — DTO field: object
   briefDescription: pick(t.object, t.briefDescription),
-  // Support group / type — DTO field: Description
-  issueType: pick(t.Description, t.description, t.issueType),
-  // Technician — not present in TicketCompletDTO, kept for forward compatibility
-  technicien: pick(t.technicien, t.technician) ?? null,
+  // Support group / type
+  issueType: pick(t.issueType) ?? null,
+  // Technician — DTO field: description (Jackson serialises Description → description)
+  technicien: pick(t.description, t.Description, t.technicien, t.technician) ?? null,
   // Status — DTO field: Status
   status: pick(t.Status, t.status),
   // Priority — DTO field: Priorite
