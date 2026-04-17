@@ -19,3 +19,7 @@ echo All services launched!
 echo API Gateway   : http://localhost:8080
 echo Eureka        : http://localhost:8761
 echo Config Server : http://localhost:8888
+echo.
+echo Press any key to STOP all services...
+pause >nul
+call stop-all.bat
