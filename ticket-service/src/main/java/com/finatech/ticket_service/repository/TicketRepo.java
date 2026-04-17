@@ -52,26 +52,25 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
     List<Object[]> getTempsResolutionParTechnicien();
 
     // API - Tickets résolus - SQL natif
+    // Compte SEULEMENT les tickets avec statut résolu
     @Query(value = """
         SELECT COUNT(i."IssueID")
         FROM "ZDEV_GP"."MARISupportIssue" i
         JOIN "ZDEV_GP"."MARISupportSettings" s
           ON i."Status" = s."ID" AND s."Setting" = 1
         WHERE LOWER(s."Matchcode") LIKE '%résolu%'
-           OR LOWER(s."Matchcode") LIKE '%fermé%'
-           OR LOWER(s."Matchcode") LIKE '%clos%'
         """, nativeQuery = true)
     long countTicketsResolus();
 
-    // API - Tickets clôturés (basé sur statut résolu/fermé/clos ET date de clôture) - SQL natif
+    // API - Tickets clôturés (fermé/clôturé) - SQL natif
+    // Compte les tickets avec statut fermé OU clôturé (pas résolu)
     @Query(value = """
         SELECT COUNT(i."IssueID")
         FROM "ZDEV_GP"."MARISupportIssue" i
         JOIN "ZDEV_GP"."MARISupportSettings" s
           ON i."Status" = s."ID" AND s."Setting" = 1
         WHERE i."USER_DateCloture" IS NOT NULL
-          AND (LOWER(s."Matchcode") LIKE '%résolu%'
-               OR LOWER(s."Matchcode") LIKE '%fermé%'
+          AND (LOWER(s."Matchcode") LIKE '%fermé%'
                OR LOWER(s."Matchcode") LIKE '%clos%')
         """, nativeQuery = true)
     long countTicketsClotures();
