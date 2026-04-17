@@ -19,9 +19,8 @@ public class TechnicienImpl implements TechnicienInterface{
         return technicienRepo.countTicketsResolusByTechnicien(technicienId);
     }
 
-    // Implémenter getTechniciensActifs() — déléguer à technicienRepo.countTechniciensActifs()
     @Override
-    public long getTechniciensActifs() {
-        return 0; // TODO: appeler technicienRepo.countTechniciensActifs()
+    public long getTicketsClotures(int technicienId) {
+        return technicienRepo.countTicketsClotures(technicienId);
     }
 }
