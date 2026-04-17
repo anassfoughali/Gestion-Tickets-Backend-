@@ -23,8 +23,11 @@ public class TechnienController {
     }
     @GetMapping("/{technicienId}/clotures")
     public long getTicketsClotures(@PathVariable int technicienId)
-    {
-        return service.getTicketsClotures(technicienId);
+    {return service.getTicketsClotures(technicienId);}
+
+    @GetMapping("/{technicienId}/en_cours")
+    public long getTicketsEnCours(@PathVariable int technicienId){
+        return service.getTicketsEncours(technicienId);
     }
 
 
