@@ -36,10 +36,13 @@ const parseTicketDate = (value) => {
   if (!Number.isNaN(d1.getTime())) return d1;
 
   if (typeof value === "string") {
-    const m = value.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+    // Handle "dd/mm/yyyy", "dd/mm/yyyy HH:mm", "dd-mm-yyyy HH:mm", etc.
+    const m = value.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})(?:[\s,T]+(\d{1,2}):(\d{2}))?/);
     if (m) {
-      const [, dd, mm, yyyy] = m;
-      const d2 = new Date(`${yyyy}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}T00:00:00`);
+      const [, dd, mm, yyyy, hh = "00", min = "00"] = m;
+      const d2 = new Date(
+        `${yyyy}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}T${hh.padStart(2, "0")}:${min.padStart(2, "0")}:00`
+      );
       if (!Number.isNaN(d2.getTime())) return d2;
     }
   }
@@ -75,7 +78,7 @@ const Tickets = () => {
   const [activeFilter, setActiveFilter] = React.useState("tous");
   const [activePriorityFilter, setActivePriorityFilter] = React.useState("tous");
   const [currentPage, setCurrentPage] = React.useState(1);
-  const { tickets, loading, error, refresh } = useTickets();
+  const { tickets, evolutionData, loading, error, refresh } = useTickets();
   const chartRef = React.useRef(null);
 
   const filteredByStatus = React.useMemo(() => {
@@ -108,33 +111,51 @@ const Tickets = () => {
 
   const closureRate = stats.total > 0 ? `${Math.round(((stats.closed + stats.resolved) / stats.total) * 100)}%` : "0%";
 
-  const monthlyEvolution = React.useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  // Map API data ({ date, total, clotures }) to chart format ({ dayLabel, totalTickets, closedTickets })
+  const chartEvolutionData = React.useMemo(() => {
+    if (evolutionData.length > 0) {
+      return evolutionData.map((d) => {
+        let label = d.date ?? '';
+        // Convert ISO "yyyy-mm-dd" → "dd/mm"
+        const iso = String(label).match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (iso) label = `${iso[3]}/${iso[2]}`;
+        return {
+          dayLabel: label,
+          totalTickets: Number(d.total) || 0,
+          closedTickets: Number(d.clotures) || 0,
+        };
+      });
+    }
+    // Fallback: compute from ticket list when API data is not yet available
+    let anchor = new Date(0);
+    tickets.forEach((t) => {
+      const d = parseTicketDate(t?.requestDate);
+      if (d && !Number.isNaN(d.getTime()) && d > anchor) anchor = d;
+    });
+    if (anchor.getTime() === 0) anchor = new Date();
+    anchor.setHours(0, 0, 0, 0);
 
     const days = [];
     const dayMap = {};
     for (let i = 29; i >= 0; i -= 1) {
-      const d = new Date(today);
-      d.setDate(today.getDate() - i);
+      const d = new Date(anchor);
+      d.setDate(anchor.getDate() - i);
       const key = toDayKey(d);
       const row = { dayKey: key, dayLabel: toDayLabel(d), totalTickets: 0, closedTickets: 0 };
       days.push(row);
       dayMap[key] = row;
     }
-
     tickets.forEach((t) => {
       const d = parseTicketDate(t?.requestDate);
-      if (!d) return;
+      if (!d || Number.isNaN(d.getTime())) return;
       d.setHours(0, 0, 0, 0);
       const row = dayMap[toDayKey(d)];
       if (!row) return;
       row.totalTickets += 1;
       if (isClosedStatus(t?.status)) row.closedTickets += 1;
     });
-
     return days;
-  }, [tickets]);
+  }, [evolutionData, tickets]);
 
   const totalPages = Math.max(1, Math.ceil(filteredTickets.length / ROWS_PER_PAGE));
 
@@ -156,18 +177,18 @@ const Tickets = () => {
   };
 
   const handleExportExcel = () => {
-    const headers = ["N° Ticket", "Objet", "Client", "Technicien", "Type", "Priorité", "Statut", "Date Création", "Date Clôture", "Durée (h)"];
+    const headers = ["N° Ticket", "Objet", "Client", "Technicien Description", "Type", "Priorité", "Statut", "Date Création", "Date Clôture", "Durée (h)"];
     const rows = filteredTickets.map((t) => [
       toStr(t.issueID),
       toStr(t.briefDescription),
-      toStr(t.cardName),
+      toStr(t.client),
       toStr(t.technicien),
       toStr(t.issueType),
       priorityLabel(t.priority),
       toStr(t.status),
       toStr(t.requestDate),
-      toStr(t.dateCloture),
-      toStr(t.duree),
+      toStr(t.closeDate),
+      toStr(t.resolutionDuration),
     ]);
 
     const tableRows = [headers, ...rows]
@@ -301,7 +322,7 @@ const Tickets = () => {
                       <th className="pb-3 font-medium text-left">N° Ticket</th>
                       <th className="pb-3 font-medium text-left">Objet</th>
                       <th className="pb-3 font-medium text-left">Client</th>
-                      <th className="pb-3 font-medium text-left">Technicien</th>
+                      <th className="pb-3 font-medium text-left">Technicien Description</th>
                       <th className="pb-3 font-medium text-left">Type</th>
                       <th className="pb-3 font-medium text-left">Priorité</th>
                       <th className="pb-3 font-medium text-left">Statut</th>
@@ -317,7 +338,7 @@ const Tickets = () => {
                           {toStr(t.issueID)}
                         </td>
                         <td className="max-w-xs py-3 text-gray-700 truncate">{toStr(t.briefDescription)}</td>
-                        <td className="py-3 text-xs text-gray-500">{toStr(t.cardName)}</td>
+                        <td className="py-3 text-xs text-gray-500">{toStr(t.client)}</td>
                         <td className="py-3 text-xs text-gray-500">{toStr(t.technicien)}</td>
                         <td className="py-3 text-xs text-gray-500">{toStr(t.issueType)}</td>
                         <td className="py-3">
@@ -331,8 +352,8 @@ const Tickets = () => {
                           </span>
                         </td>
                         <td className="py-3 text-xs text-gray-400">{toStr(t.requestDate)}</td>
-                        <td className="py-3 text-xs text-gray-400">{toStr(t.dateCloture)}</td>
-                        <td className="py-3 text-xs text-gray-400">{toStr(t.duree)}</td>
+                        <td className="py-3 text-xs text-gray-400">{toStr(t.closeDate)}</td>
+                        <td className="py-3 text-xs text-gray-400">{toStr(t.resolutionDuration)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -378,7 +399,7 @@ const Tickets = () => {
             </div>
           </div>
 
-          <TicketEvolutionChart data={monthlyEvolution} chartRef={chartRef} />
+          <TicketEvolutionChart data={chartEvolutionData} chartRef={chartRef} />
 
         </main>
       </div>

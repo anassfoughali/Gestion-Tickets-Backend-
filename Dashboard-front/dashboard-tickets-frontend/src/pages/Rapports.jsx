@@ -124,7 +124,7 @@ const Rapports = () => {
                       <th className="pb-3 font-medium text-left">Description</th>
                       <th className="pb-3 font-medium text-left">Statut</th>
                       <th className="pb-3 font-medium text-left">Priorité</th>
-                      <th className="pb-3 font-medium text-left">Technicien</th>
+                      <th className="pb-3 font-medium text-left">Technicien Description</th>
                       <th className="pb-3 font-medium text-left">Date</th>
                     </tr>
                   </thead>
