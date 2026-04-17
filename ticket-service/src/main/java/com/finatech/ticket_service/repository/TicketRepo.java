@@ -62,8 +62,8 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
         """, nativeQuery = true)
     long countTicketsResolus();
 
-    // API - Tickets clôturés (fermé/clôturé) - SQL natif
-    // Compte les tickets avec statut fermé OU clôturé (pas résolu)
+    // API - Tickets clôturés (fermé/clôturé/résolu) - SQL natif
+    // Compte les tickets avec statut fermé, clôturé OU résolu
     @Query(value = """
         SELECT COUNT(i."IssueID")
         FROM "ZDEV_GP"."MARISupportIssue" i
@@ -71,7 +71,8 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
           ON i."Status" = s."ID" AND s."Setting" = 1
         WHERE i."USER_DateCloture" IS NOT NULL
           AND (LOWER(s."Matchcode") LIKE '%fermé%'
-               OR LOWER(s."Matchcode") LIKE '%clos%')
+               OR LOWER(s."Matchcode") LIKE '%clos%'
+               OR LOWER(s."Matchcode") LIKE '%résolu%')
         """, nativeQuery = true)
     long countTicketsClotures();
 
