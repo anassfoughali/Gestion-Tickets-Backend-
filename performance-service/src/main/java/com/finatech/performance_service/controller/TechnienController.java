@@ -22,4 +22,8 @@ public class TechnienController {
         return service.getTicketsResolus(technicienId);
     }
 
+    // GET /actifs — aucun paramètre
+    // Retourne : long (nombre de techniciens actifs)
+    // Appeler : service.getTechniciensActifs()
+
 }

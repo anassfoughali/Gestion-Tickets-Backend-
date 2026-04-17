@@ -34,4 +34,11 @@ public interface TechnicienRepo extends JpaRepository<Technicien, Integer> {
     """, nativeQuery = true)
     long countTicketsResolusByTechnicien(@Param("technicienId") int technicienId);
 
+    // Compte le nombre de techniciens distincts ayant des tickets encore actifs
+    // @Query nativeQuery = true
+    // COUNT(DISTINCT "SupportGroupID") dans MARISupportIssue
+    // JOIN MARISupportSettings ON "Status"="ID" AND "Setting"=1
+    // Exclure via LOWER() + NOT LIKE les statuts : résolu, resolu, fermé, ferme, clos, clôturé, cloture
+    long countTechniciensActifs();
+
 }
