@@ -52,25 +52,21 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
     List<Object[]> getTempsResolutionParTechnicien();
 
     // API - Tickets résolus - SQL natif
-    // Compte SEULEMENT les tickets avec statut résolu
     @Query(value = """
         SELECT COUNT(i."IssueID")
         FROM "ZDEV_GP"."MARISupportIssue" i
         JOIN "ZDEV_GP"."MARISupportSettings" s
           ON i."Status" = s."ID" AND s."Setting" = 1
-        WHERE LOWER(s."Matchcode") LIKE '%résolu%'
+        WHERE s."Matchcode" LIKE 'Statut%'
         """, nativeQuery = true)
     long countTicketsResolus();
 
+
     // API - Tickets clôturés - SQL natif
-    // Compte les tickets dont USER_DateCloture est renseignée (logique métier SAP HANA)
-    @Query(value = """
-        SELECT COUNT(i."IssueID")
-        FROM "ZDEV_GP"."MARISupportIssue" i
-        JOIN "ZDEV_GP"."MARISupportSettings" s
-          ON i."Status" = s."ID" AND s."Setting" = 1
-        WHERE i."USER_DateCloture" IS NOT NULL
-        """, nativeQuery = true)
+    @Query(value = "SELECT COUNT(i.\"IssueID\") " +
+            "FROM \"ZDEV_GP\".\"MARISupportIssue\" i JOIN \"ZDEV_GP\".\"MARISupportSettings\" " +
+            "s ON i.\"Status\" = s.\"ID\" AND s.\"Setting\" = 1 WHERE s.\"Matchcode\" LIKE 'ferm_' " +
+            "OR s.\"Matchcode\" LIKE 'Cl_tur_' OR s.\"Matchcode\" LIKE 'Cl_tur_ %'", nativeQuery = true)
     long countTicketsClotures();
 
     // API - Temps de résolution moyen - SQL natif
