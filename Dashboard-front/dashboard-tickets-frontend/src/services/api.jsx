@@ -26,13 +26,13 @@ const normalizeTicket = (t = {}) => ({
 
 const normalizeDayStat = (d = {}) => {
   const countValue =
-    d.total ?? d.count ?? d.nombre ?? d.crees ??
+    d.nbr_crees ?? d.total ?? d.count ?? d.nombre ?? d.crees ??
     d.nombreTickets ?? d.ticketCount ?? d.ticketsCount ??
     d.nbTickets ?? d.nb ?? d.compteur ?? d.quantity ??
     d.totalTickets ?? d.ticketsOuverts ?? d.created ?? 0;
 
   const cloturesValue =
-    d.clotures ?? d.closed ?? d.resolved ?? d.nombreClotures ??
+    d.nbr_clotures ?? d.clotures ?? d.closed ?? d.resolved ?? d.nombreClotures ??
     d.nbClotures ?? d.closedTickets ?? d.clotured ?? 0;
 
   return {

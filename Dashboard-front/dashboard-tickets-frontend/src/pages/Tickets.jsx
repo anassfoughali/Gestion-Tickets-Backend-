@@ -78,7 +78,7 @@ const Tickets = () => {
   const [activeFilter, setActiveFilter] = React.useState("tous");
   const [activePriorityFilter, setActivePriorityFilter] = React.useState("tous");
   const [currentPage, setCurrentPage] = React.useState(1);
-  const { tickets, loading, error, refresh } = useTickets();
+  const { tickets, evolutionData, loading, error, refresh } = useTickets();
   const chartRef = React.useRef(null);
 
   const filteredByStatus = React.useMemo(() => {
@@ -111,8 +111,22 @@ const Tickets = () => {
 
   const closureRate = stats.total > 0 ? `${Math.round(((stats.closed + stats.resolved) / stats.total) * 100)}%` : "0%";
 
-  const monthlyEvolution = React.useMemo(() => {
-    // Anchor the window to the latest ticket date so data from 2024-2025 is always visible
+  // Map API data ({ date, total, clotures }) to chart format ({ dayLabel, totalTickets, closedTickets })
+  const chartEvolutionData = React.useMemo(() => {
+    if (evolutionData.length > 0) {
+      return evolutionData.map((d) => {
+        let label = d.date ?? '';
+        // Convert ISO "yyyy-mm-dd" → "dd/mm"
+        const iso = String(label).match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (iso) label = `${iso[3]}/${iso[2]}`;
+        return {
+          dayLabel: label,
+          totalTickets: Number(d.total) || 0,
+          closedTickets: Number(d.clotures) || 0,
+        };
+      });
+    }
+    // Fallback: compute from ticket list when API data is not yet available
     let anchor = new Date(0);
     tickets.forEach((t) => {
       const d = parseTicketDate(t?.requestDate);
@@ -131,7 +145,6 @@ const Tickets = () => {
       days.push(row);
       dayMap[key] = row;
     }
-
     tickets.forEach((t) => {
       const d = parseTicketDate(t?.requestDate);
       if (!d || Number.isNaN(d.getTime())) return;
@@ -141,9 +154,8 @@ const Tickets = () => {
       row.totalTickets += 1;
       if (isClosedStatus(t?.status)) row.closedTickets += 1;
     });
-
     return days;
-  }, [tickets]);
+  }, [evolutionData, tickets]);
 
   const totalPages = Math.max(1, Math.ceil(filteredTickets.length / ROWS_PER_PAGE));
 
@@ -387,7 +399,7 @@ const Tickets = () => {
             </div>
           </div>
 
-          <TicketEvolutionChart data={monthlyEvolution} chartRef={chartRef} />
+          <TicketEvolutionChart data={chartEvolutionData} chartRef={chartRef} />
 
         </main>
       </div>
