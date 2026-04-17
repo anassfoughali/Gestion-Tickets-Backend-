@@ -9,11 +9,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TechnicienRepo extends JpaRepository<Technicien, Integer> {
 
-    // Acces donnée Nombre de tickets pour un technicien spécifique - SQL natif
+    // Nombre de tickets pour un technicien spécifique - SQL natif
     @Query(value = """
     SELECT COUNT(i."IssueID")
     FROM "ZDEV_GP"."MARISupportIssue" i
     WHERE i."SupportGroupID" = :technicienId
+      AND i."USER_DateReceptionEmail" IS NOT NULL
     """, nativeQuery = true)
     long countTicketsByTechnicien(@Param("technicienId") int technicienId);
 
