@@ -16,6 +16,7 @@ public class TicketCompletDTO {
     private String date_cloture;
     private String durée_resolution ;
     private String client ;
+    private String IssueType ;
 
 
 }

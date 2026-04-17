@@ -162,7 +162,9 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
                 ELSE NULL
             END AS duree_resolution,
             
-            t."AddressMatchcode" AS client
+            t."AddressMatchcode" AS client,
+
+            s_issue_type."Matchcode" AS IssueType
 
         FROM "ZDEV_GP"."MARISupportIssue" t
 
@@ -176,6 +178,10 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
         LEFT JOIN "ZDEV_GP"."MARISupportSettings" s_priority
             ON s_priority."ID" = t."Priority"
             AND s_priority."Setting" = 3
+
+        LEFT JOIN "ZDEV_GP"."MARISupportSettings" s_issue_type
+            ON s_issue_type."ID" = t."IssueType"
+            AND s_issue_type."Setting" = 2
         """, nativeQuery = true)
     List<Object[]> getTicketsComplets();
 
