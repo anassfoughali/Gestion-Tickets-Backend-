@@ -177,7 +177,7 @@ const Tickets = () => {
   };
 
   const handleExportExcel = () => {
-    const headers = ["N° Ticket", "Objet", "Client", "Technicien", "Type", "Priorité", "Statut", "Date Création", "Date Clôture", "Durée (h)"];
+    const headers = ["N° Ticket", "Objet", "Client", "Technicien Description", "Type", "Priorité", "Statut", "Date Création", "Date Clôture", "Durée (h)"];
     const rows = filteredTickets.map((t) => [
       toStr(t.issueID),
       toStr(t.briefDescription),
@@ -322,7 +322,7 @@ const Tickets = () => {
                       <th className="pb-3 font-medium text-left">N° Ticket</th>
                       <th className="pb-3 font-medium text-left">Objet</th>
                       <th className="pb-3 font-medium text-left">Client</th>
-                      <th className="pb-3 font-medium text-left">Technicien</th>
+                      <th className="pb-3 font-medium text-left">Technicien Description</th>
                       <th className="pb-3 font-medium text-left">Type</th>
                       <th className="pb-3 font-medium text-left">Priorité</th>
                       <th className="pb-3 font-medium text-left">Statut</th>

@@ -83,7 +83,7 @@ const SlaTechChart = ({ data = [] }) => {
 
   return (
     <div className="p-6 bg-white border border-gray-100 shadow-sm rounded-xl">
-      <h3 className="mb-1 text-sm font-semibold text-gray-700">SLA par Technicien</h3>
+      <h3 className="mb-1 text-sm font-semibold text-gray-700">SLA par Technicien Description</h3>
       <p className="mb-4 text-xs text-gray-400">Taux de conformité individuel (%)</p>
       <ResponsiveContainer width="100%" height={260}>
         <BarChart data={normalized} layout="vertical">
@@ -117,7 +117,7 @@ const SlaTable = ({ tickets = [] }) => {
             <tr className="text-xs text-gray-400 uppercase border-b">
               <th className="pb-3 font-medium text-left">N° Ticket</th>
               <th className="pb-3 font-medium text-left">Objet</th>
-              <th className="pb-3 font-medium text-left">Technicien</th>
+              <th className="pb-3 font-medium text-left">Technicien Description</th>
               <th className="pb-3 font-medium text-left">Priorité</th>
               <th className="pb-3 font-medium text-left">Délai dépassé</th>
               <th className="pb-3 font-medium text-left">Statut</th>
