@@ -18,4 +18,9 @@ public class TechnicienImpl implements TechnicienInterface{
     public long getTicketsResolus(int technicienId) {
         return technicienRepo.countTicketsResolusByTechnicien(technicienId);
     }
+
+    @Override
+    public long getTicketsClotures(int technicienId) {
+        return technicienRepo.countTicketsClotures(technicienId);
+    }
 }

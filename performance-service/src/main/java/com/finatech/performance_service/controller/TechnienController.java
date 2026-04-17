@@ -21,5 +21,11 @@ public class TechnienController {
     public long getTicketResolue(@PathVariable int technicienId) {
         return service.getTicketsResolus(technicienId);
     }
+    @GetMapping("/{technicienId}/clotures")
+    public long getTicketsClotures(@PathVariable int technicienId)
+    {
+        return service.getTicketsClotures(technicienId);
+    }
+
 
 }

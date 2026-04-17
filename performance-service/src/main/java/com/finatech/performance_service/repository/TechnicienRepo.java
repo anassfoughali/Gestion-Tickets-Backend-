@@ -34,4 +34,22 @@ public interface TechnicienRepo extends JpaRepository<Technicien, Integer> {
     """, nativeQuery = true)
     long countTicketsResolusByTechnicien(@Param("technicienId") int technicienId);
 
+    // Nombre total de tickets clôturés (fermé/clôturé/clos) pour un technicien donné
+    @Query(value = """
+    SELECT COUNT(i."IssueID")
+    FROM "ZDEV_GP"."MARISupportIssue" i
+    JOIN "ZDEV_GP"."MARISupportSettings" s
+      ON i."Status" = s."ID"
+      AND s."Setting" = 1
+    WHERE i."SupportGroupID" = :technicienId
+      AND (
+        LOWER(s."Matchcode") LIKE '%fermé%'
+        OR LOWER(s."Matchcode") LIKE '%ferme%'
+        OR LOWER(s."Matchcode") LIKE '%clôturé%'
+        OR LOWER(s."Matchcode") LIKE '%cloture%'
+        OR LOWER(s."Matchcode") LIKE '%clos%'
+      )
+""", nativeQuery = true)
+    long countTicketsClotures(@Param("technicienId") int technicienId);
+
 }
