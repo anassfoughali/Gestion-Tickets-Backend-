@@ -52,4 +52,23 @@ public interface TechnicienRepo extends JpaRepository<Technicien, Integer> {
 """, nativeQuery = true)
     long countTicketsClotures(@Param("technicienId") int technicienId);
 
+    @Query(value = """
+    SELECT COUNT(i."IssueID")
+    FROM "ZDEV_GP"."MARISupportIssue" i
+    JOIN "ZDEV_GP"."MARISupportSettings" s
+      ON i."Status" = s."ID"
+      AND s."Setting" = 1
+    WHERE i."SupportGroupID" = :technicienId
+      AND (
+        LOWER(s."Matchcode") LIKE '%cours%'
+        OR LOWER(s."Matchcode") LIKE '%progress%'
+        OR LOWER(s."Matchcode") LIKE '%attente%'
+        OR LOWER(s."Matchcode") LIKE '%pending%'
+        OR LOWER(s."Matchcode") LIKE '%encours%'
+      )
+""", nativeQuery = true)
+long countTicketsEnCoursEtAttente(@Param("technicienId") int technicienId);
+
+
+
 }

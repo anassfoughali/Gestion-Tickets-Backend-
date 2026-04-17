@@ -7,4 +7,5 @@ public interface TechnicienInterface {
     long getTechnicien(int technicienId);
     long getTicketsResolus(int technicienId);
     long getTicketsClotures(int technicienId);
+    long getTicketsEncours(int technicienId) ; 
 }
