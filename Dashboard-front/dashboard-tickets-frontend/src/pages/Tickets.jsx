@@ -181,14 +181,14 @@ const Tickets = () => {
     const rows = filteredTickets.map((t) => [
       toStr(t.issueID),
       toStr(t.briefDescription),
-      toStr(t.cardName),
+      toStr(t.client),
       toStr(t.technicien),
       toStr(t.issueType),
       priorityLabel(t.priority),
       toStr(t.status),
       toStr(t.requestDate),
-      toStr(t.dateCloture),
-      toStr(t.duree),
+      toStr(t.closeDate),
+      toStr(t.resolutionDuration),
     ]);
 
     const tableRows = [headers, ...rows]
@@ -338,7 +338,7 @@ const Tickets = () => {
                           {toStr(t.issueID)}
                         </td>
                         <td className="max-w-xs py-3 text-gray-700 truncate">{toStr(t.briefDescription)}</td>
-                        <td className="py-3 text-xs text-gray-500">{toStr(t.cardName)}</td>
+                        <td className="py-3 text-xs text-gray-500">{toStr(t.client)}</td>
                         <td className="py-3 text-xs text-gray-500">{toStr(t.technicien)}</td>
                         <td className="py-3 text-xs text-gray-500">{toStr(t.issueType)}</td>
                         <td className="py-3">
@@ -352,8 +352,8 @@ const Tickets = () => {
                           </span>
                         </td>
                         <td className="py-3 text-xs text-gray-400">{toStr(t.requestDate)}</td>
-                        <td className="py-3 text-xs text-gray-400">{toStr(t.dateCloture)}</td>
-                        <td className="py-3 text-xs text-gray-400">{toStr(t.duree)}</td>
+                        <td className="py-3 text-xs text-gray-400">{toStr(t.closeDate)}</td>
+                        <td className="py-3 text-xs text-gray-400">{toStr(t.resolutionDuration)}</td>
                       </tr>
                     ))}
                   </tbody>
