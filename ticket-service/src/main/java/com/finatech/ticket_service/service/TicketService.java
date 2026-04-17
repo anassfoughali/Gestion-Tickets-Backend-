@@ -40,9 +40,9 @@ public class TicketService {
         return ticketRepo.count();
     }
 
-    //  API  — Tickets résolus (basé sur date de clôture) — SQL natif
+    //  API  — Tickets résolus — SQL natif
     public TicketsResolusDTO getTicketsResolus() {
-        return new TicketsResolusDTO(ticketRepo.countTicketsClotures());
+        return new TicketsResolusDTO(ticketRepo.countTicketsResolus());
     }
 
     //  API  — Tickets clôturés — SQL natif

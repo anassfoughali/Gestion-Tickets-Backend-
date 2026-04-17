@@ -56,8 +56,12 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
         SELECT COUNT(i."IssueID")
         FROM "ZDEV_GP"."MARISupportIssue" i
         JOIN "ZDEV_GP"."MARISupportSettings" s
-          ON i."Status" = s."ID" AND s."Setting" = 1
-        WHERE s."Matchcode" LIKE 'Statut%'
+          ON i."Status" = s."ID"
+        WHERE s."Setting" = 1
+          AND (LOWER(s."Matchcode") LIKE '%resolu%'
+           OR LOWER(s."Matchcode") LIKE '%résolu%'
+           OR LOWER(s."Matchcode") LIKE '%resolv%'
+           OR LOWER(s."Matchcode") LIKE '%r_solu%')
         """, nativeQuery = true)
     long countTicketsResolus();
 
