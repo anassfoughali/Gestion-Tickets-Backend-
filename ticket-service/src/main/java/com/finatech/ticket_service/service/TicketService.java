@@ -1,5 +1,6 @@
 package com.finatech.ticket_service.service;
 import com.finatech.ticket_service.dto.TempsResolutionDTO;
+import com.finatech.ticket_service.dto.TicketsOuvertsParTechnicienDTO;
 import com.finatech.ticket_service.dto.TicketsEnCoursDTO;
 import com.finatech.ticket_service.dto.TicketsOuvertsDTO;
 import com.finatech.ticket_service.dto.TicketsResolusDTO;
@@ -48,5 +49,16 @@ public class TicketService {
     //  API  — Tickets clôturés — SQL natif
     public TicketsClouresDTO getTicketsClotures() {
         return new TicketsClouresDTO(ticketRepo.countTicketsClotures());
+    }
+
+    // API — Tickets ouverts par technicien — SQL natif
+    public List<TicketsOuvertsParTechnicienDTO> getTicketsOuvertsParTechnicien() {
+        return ticketRepo.countTicketsOuvertsParTechnicien()
+                .stream()
+                .map(row -> new TicketsOuvertsParTechnicienDTO(
+                        (String) row[0],
+                        row[1] != null ? ((Number) row[1]).longValue() : 0L
+                ))
+                .collect(Collectors.toList());
     }
 }
