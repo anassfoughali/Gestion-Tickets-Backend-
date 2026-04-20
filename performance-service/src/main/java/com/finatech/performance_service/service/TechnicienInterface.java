@@ -1,5 +1,9 @@
 package com.finatech.performance_service.service;
+
+import com.finatech.performance_service.dto.TicketsParJourDTO;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public interface TechnicienInterface {
@@ -7,9 +11,9 @@ public interface TechnicienInterface {
     long getTechnicien(int technicienId);
     long getTicketsResolus(int technicienId);
     long getTicketsClotures(int technicienId);
-    long getTicketsEncours(int technicienId) ;
-    Double getTempsResolutionMoyen(int technienId);
+    long getTicketsEncours(int technicienId);
+    Double getTempsResolutionMoyen(int technicienId);
+    List<TicketsParJourDTO> getEvolutionParJour(int technicienId);
 
-    // Déclarer la méthode : getTempsResolutionMoyen(int technicienId)
-    // Retourne : Double — le temps moyen de résolution en heures pour ce technicien
+    // TODO : prend un technicienId, retourne List<TicketsParJourDTO> (affectés + clôturés par jour)
 }
