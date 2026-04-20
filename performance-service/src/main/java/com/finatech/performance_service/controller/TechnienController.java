@@ -42,7 +42,9 @@ public class TechnienController {
         return ResponseEntity.ok(service.getTempsResolutionMoyen(technicienId));
     }
 
+
+    @GetMapping("/{technicienId}/evolutionParJour")
     public ResponseEntity<List<TicketsParJourDTO>> getActiviteParJour(@PathVariable int technicienId) {
-        return ResponseEntity.ok(service.getEvolutionParJour(techncienID));
+        return ResponseEntity.ok(service.getEvolutionParJour(technicienId));
     }
 }
