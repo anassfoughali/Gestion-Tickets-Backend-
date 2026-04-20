@@ -171,7 +171,7 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
             
             CASE 
                 WHEN t."USER_DateCloture" IS NOT NULL AND t."USER_DateReceptionEmail" IS NOT NULL
-                THEN DAYS_BETWEEN(TO_DATE(t."USER_DateReceptionEmail", 'DD/MM/YYYY HH24:MI'), t."USER_DateCloture")
+                THEN DAYS_BETWEEN(TO_DATE(t."USER_DateReceptionEmail", 'DD/MM/YYYY HH24:MI'), t."USER_DateCloture") * 24
                 ELSE NULL
             END AS duree_resolution,
             
