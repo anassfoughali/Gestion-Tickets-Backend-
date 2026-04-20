@@ -65,7 +65,9 @@ public class TicketImpl  implements TicketInterfaceService {
                         row[5] != null ? row[5].toString() : null,  // date_reception
                         row[6] != null ? row[6].toString() : null,  // date_cloture
                         row[7] != null ? row[7].toString() : null,  // duree_resolution
-                        (String) row[8]                  // client
+                        (String) row[8],                 // client
+                        (String) row[9]                  // IssueType
                 )).toList();
     }
+
 }

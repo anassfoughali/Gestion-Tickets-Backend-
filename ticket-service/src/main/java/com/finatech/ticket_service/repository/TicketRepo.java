@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
-
 @Repository
 public interface TicketRepo extends JpaRepository<Ticket, Long> {
 
@@ -56,19 +55,21 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
         SELECT COUNT(i."IssueID")
         FROM "ZDEV_GP"."MARISupportIssue" i
         JOIN "ZDEV_GP"."MARISupportSettings" s
-          ON i."Status" = s."ID" AND s."Setting" = 1
-        WHERE LOWER(s."Matchcode") LIKE '%résolu%'
-           OR LOWER(s."Matchcode") LIKE '%fermé%'
-           OR LOWER(s."Matchcode") LIKE '%clos%'
+          ON i."Status" = s."ID"
+        WHERE s."Setting" = 1
+          AND (LOWER(s."Matchcode") LIKE '%resolu%'
+           OR LOWER(s."Matchcode") LIKE '%résolu%'
+           OR LOWER(s."Matchcode") LIKE '%resolv%'
+           OR LOWER(s."Matchcode") LIKE '%r_solu%')
         """, nativeQuery = true)
     long countTicketsResolus();
 
-    // API - Tickets clôturés (basé sur date de clôture) - SQL natif
-    @Query(value = """
-        SELECT COUNT(i."IssueID")
-        FROM "ZDEV_GP"."MARISupportIssue" i
-        WHERE i."USER_DateCloture" IS NOT NULL
-        """, nativeQuery = true)
+
+    // API - Tickets clôturés - SQL natif
+    @Query(value = "SELECT COUNT(i.\"IssueID\") " +
+            "FROM \"ZDEV_GP\".\"MARISupportIssue\" i JOIN \"ZDEV_GP\".\"MARISupportSettings\" " +
+            "s ON i.\"Status\" = s.\"ID\" AND s.\"Setting\" = 1 WHERE s.\"Matchcode\" LIKE 'ferm_' " +
+            "OR s.\"Matchcode\" LIKE 'Cl_tur_' OR s.\"Matchcode\" LIKE 'Cl_tur_ %'", nativeQuery = true)
     long countTicketsClotures();
 
     // API - Temps de résolution moyen - SQL natif
@@ -160,7 +161,9 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
                 ELSE NULL
             END AS duree_resolution,
             
-            t."AddressMatchcode" AS client
+            t."AddressMatchcode" AS client,
+
+            s_issue_type."Matchcode" AS IssueType
 
         FROM "ZDEV_GP"."MARISupportIssue" t
 
@@ -174,6 +177,10 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
         LEFT JOIN "ZDEV_GP"."MARISupportSettings" s_priority
             ON s_priority."ID" = t."Priority"
             AND s_priority."Setting" = 3
+
+        LEFT JOIN "ZDEV_GP"."MARISupportSettings" s_issue_type
+            ON s_issue_type."ID" = t."IssueType"
+            AND s_issue_type."Setting" = 2
         """, nativeQuery = true)
     List<Object[]> getTicketsComplets();
 
