@@ -13,6 +13,5 @@ public interface TechnicienInterface {
     long getTicketsClotures(int technicienId);
     long getTicketsEncours(int technicienId);
     Double getTempsResolutionMoyen(int technienId);
-
-    // TODO : prend un technicienId, retourne List<TicketsParJourDTO> (affectés + clôturés par jour)
+    List<TicketsParJourDTO> getEvolutionParJour(int technicienId);
 }
