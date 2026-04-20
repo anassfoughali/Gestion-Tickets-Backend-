@@ -5,6 +5,7 @@ import com.finatech.performance_service.repository.TicketRepo;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -47,13 +48,25 @@ public class TechnicienImpl implements TechnicienInterface{
         if (ticketList.isEmpty()) {
             return 0.0;
         }
+        DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSSSS");
+        DateTimeFormatter formatter3 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return ticketList.stream()
                 .mapToLong(tickett -> {
-                    LocalDateTime reception = java.sql.Timestamp.valueOf(tickett.getDate_reception()).toLocalDateTime();
-                    LocalDateTime cloture   = java.sql.Timestamp.valueOf(tickett.getDate_cloture()).toLocalDateTime();
+                    LocalDateTime reception = parseDate(tickett.getDate_reception(), formatter1, formatter2, formatter3);
+                    LocalDateTime cloture   = parseDate(tickett.getDate_cloture(), formatter1, formatter2, formatter3);
                     return ChronoUnit.HOURS.between(reception, cloture);
                 })
                 .average()
                 .orElse(0.0);
+    }
+
+    private LocalDateTime parseDate(String date, DateTimeFormatter... formatters) {
+        for (DateTimeFormatter formatter : formatters) {
+            try {
+                return LocalDateTime.parse(date, formatter);
+            } catch (Exception ignored) {}
+        }
+        throw new IllegalArgumentException("Format de date non reconnu : " + date);
     }
 }
