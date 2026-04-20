@@ -1,5 +1,4 @@
 package com.finatech.performance_service.repository;
-
 import com.finatech.performance_service.model.Technicien;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,17 +19,14 @@ public interface TechnicienRepo extends JpaRepository<Technicien, Integer> {
 
 
     // Nombre de tickets résolus pour un technicien spécifique - SQL natif
-    // Compte les tickets avec statut résolu/fermé/clos ET date de clôture
+    // Compte uniquement les tickets avec statut "résolu" (pas fermé, pas clos)
     @Query(value = """
     SELECT COUNT(i."IssueID")
     FROM "ZDEV_GP"."MARISupportIssue" i
     JOIN "ZDEV_GP"."MARISupportSettings" s
       ON i."Status" = s."ID" AND s."Setting" = 1
     WHERE i."SupportGroupID" = :technicienId
-      AND i."USER_DateCloture" IS NOT NULL
-      AND (LOWER(s."Matchcode") LIKE '%résolu%'
-           OR LOWER(s."Matchcode") LIKE '%fermé%'
-           OR LOWER(s."Matchcode") LIKE '%clos%')
+      AND LOWER(s."Matchcode") LIKE '%résolu%'
     """, nativeQuery = true)
     long countTicketsResolusByTechnicien(@Param("technicienId") int technicienId);
 
