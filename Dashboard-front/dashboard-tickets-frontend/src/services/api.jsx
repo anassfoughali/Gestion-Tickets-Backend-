@@ -11,28 +11,39 @@ const api = axios.create({
 const pick = (...values) => values.find((v) => v !== undefined && v !== null);
 
 const normalizeTicket = (t = {}) => ({
-  issueID: pick(t.issueID, t.issueId, t.IssueId, t.IssueID),
-  briefDescription: pick(t.briefDescription, t.object, t.description, t.Description),
-  technicien: pick(t.technicien, t.technician, t.description, t.Description),
-  status: pick(t.status, t.Status),
+  // Ticket number — DTO field: IssueId
+  issueID: pick(t.IssueId, t.issueID, t.issueId, t.IssueID),
+  // Brief description — DTO field: object
+  briefDescription: pick(t.object, t.briefDescription),
+  // Support group / type
+  issueType: pick(t.issueType) ?? null,
+  // Technician — DTO field: description (Jackson serialises Description → description)
+  technicien: pick(t.description, t.Description, t.technicien, t.technician) ?? null,
+  // Status — DTO field: Status
+  status: pick(t.Status, t.status),
+  // Priority — DTO field: Priorite
   priority: normalizePriority(
-    pick(t.priority, t.priorite, t.Priorite, t.priorityId, t.PriorityID, t.Priority)
+    pick(t.Priorite, t.priority, t.priorite, t.priorityId, t.PriorityID, t.Priority)
   ),
-  requestDate: pick(t.requestDate, t.date_reception, t.dateReception, t.request_date),
-  closeDate: pick(t.closeDate, t.date_cloture, t.dateCloture),
-  resolutionDuration: pick(t.resolutionDuration, t.duree_resolution, t['durée_resolution']),
+  // Creation date — DTO field: date_reception
+  requestDate: pick(t.date_reception, t.requestDate, t.dateReception),
+  // Close date — DTO field: date_cloture
+  closeDate: pick(t.date_cloture, t.closeDate, t.dateCloture),
+  // Resolution duration — DTO field: durée_resolution
+  resolutionDuration: pick(t['durée_resolution'], t.duree_resolution, t.resolutionDuration),
+  // Client name — DTO field: client (AddressMatchcode)
   client: pick(t.client, t.Client),
 });
 
 const normalizeDayStat = (d = {}) => {
   const countValue =
-    d.total ?? d.count ?? d.nombre ?? d.crees ??
+    d.nbr_crees ?? d.total ?? d.count ?? d.nombre ?? d.crees ??
     d.nombreTickets ?? d.ticketCount ?? d.ticketsCount ??
     d.nbTickets ?? d.nb ?? d.compteur ?? d.quantity ??
     d.totalTickets ?? d.ticketsOuverts ?? d.created ?? 0;
 
   const cloturesValue =
-    d.clotures ?? d.closed ?? d.resolved ?? d.nombreClotures ??
+    d.nbr_clotures ?? d.clotures ?? d.closed ?? d.resolved ?? d.nombreClotures ??
     d.nbClotures ?? d.closedTickets ?? d.clotured ?? 0;
 
   return {

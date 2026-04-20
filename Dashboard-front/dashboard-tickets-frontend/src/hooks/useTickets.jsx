@@ -3,6 +3,7 @@ import { ticketsService } from '../services/api';
 
 const useTickets = () => {
   const [tickets, setTickets] = useState([]);
+  const [evolutionData, setEvolutionData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState(null);
 
@@ -10,10 +11,21 @@ const useTickets = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await ticketsService.getAll();
-      setTickets(Array.isArray(res.data) ? res.data : []);
-    } catch (err) {
-      setError(err.message);
+      const [listRes, statsRes] = await Promise.allSettled([
+        ticketsService.getAll(),
+        ticketsService.getStatsParJour(),
+      ]);
+
+      if (listRes.status === 'fulfilled') {
+        setTickets(Array.isArray(listRes.value.data) ? listRes.value.data : []);
+      } else {
+        setError(listRes.reason?.message ?? 'Erreur chargement tickets');
+      }
+
+      if (statsRes.status === 'fulfilled') {
+        setEvolutionData(Array.isArray(statsRes.value.data) ? statsRes.value.data : []);
+      }
+      // evolutionData stays [] on failure — chart falls back gracefully
     } finally {
       setLoading(false);
     }
@@ -23,7 +35,7 @@ const useTickets = () => {
     fetchData();
   }, [fetchData]);
 
-  return { tickets, loading, error, refresh: fetchData };
+  return { tickets, evolutionData, loading, error, refresh: fetchData };
 };
 
 export default useTickets;
