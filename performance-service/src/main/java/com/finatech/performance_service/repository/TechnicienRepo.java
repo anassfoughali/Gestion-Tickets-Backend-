@@ -80,11 +80,14 @@ SELECT
 FROM "ZDEV_GP"."MARISupportIssue"
 WHERE "SupportGroupID" = :technicienId
   AND "USER_DateReceptionEmail" IS NOT NULL
+  AND TO_DATE(SUBSTR("USER_DateReceptionEmail", 1, 10), 'DD/MM/YYYY') >= (
+      SELECT ADD_DAYS(MAX(TO_DATE(SUBSTR("USER_DateReceptionEmail", 1, 10), 'DD/MM/YYYY')), -30)
+      FROM "ZDEV_GP"."MARISupportIssue"
+      WHERE "USER_DateReceptionEmail" IS NOT NULL
+  )
 GROUP BY TO_VARCHAR(TO_DATE(SUBSTR("USER_DateReceptionEmail", 1, 10), 'DD/MM/YYYY'), 'YYYY-MM-DD')
 ORDER BY 1 ASC
-
-""",nativeQuery = true
-    )
+""", nativeQuery = true)
     List<Object[]> ticketTechnicienparjour(@Param("technicienId") int technicienId);
 
 
@@ -104,6 +107,10 @@ WHERE i."SupportGroupID" = :technicienId
     OR LOWER(s."Matchcode") LIKE '%clôturé%'
     OR LOWER(s."Matchcode") LIKE '%cloture%'
     OR LOWER(s."Matchcode") LIKE '%clos%'
+  )
+  AND i."USER_DateCloture" >= ADD_DAYS(
+      (SELECT MAX("USER_DateCloture") FROM "ZDEV_GP"."MARISupportIssue" WHERE "USER_DateCloture" IS NOT NULL),
+      -30
   )
 GROUP BY TO_VARCHAR("USER_DateCloture", 'YYYY-MM-DD')
 ORDER BY 1 ASC
