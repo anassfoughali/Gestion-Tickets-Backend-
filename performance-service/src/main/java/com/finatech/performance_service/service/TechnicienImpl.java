@@ -1,4 +1,6 @@
 package com.finatech.performance_service.service;
+
+import com.finatech.performance_service.dto.TicketsParJourDTO;
 import com.finatech.performance_service.model.Ticket;
 import com.finatech.performance_service.repository.TechnicienRepo;
 import com.finatech.performance_service.repository.TicketRepo;
@@ -7,26 +9,25 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
-public class TechnicienImpl implements TechnicienInterface{
+public class TechnicienImpl implements TechnicienInterface {
 
-    final TechnicienRepo technicienRepo ;
-    final TicketRepo ticketRepo ;
+    final TechnicienRepo technicienRepo;
+    final TicketRepo ticketRepo;
 
-    // Injecter également TicketRepo via le constructeur (injection par constructeur, pas @Autowired)
-    // Ajouter le champ : final TicketRepo ticketRepo
-
-    public TechnicienImpl(TechnicienRepo technicienRepo , TicketRepo ticketRepo){
-        this.technicienRepo = technicienRepo ;
-        this.ticketRepo = ticketRepo ;
-        // Ajouter ticketRepo dans les paramètres du constructeur et l'assigner ici
+    public TechnicienImpl(TechnicienRepo technicienRepo, TicketRepo ticketRepo) {
+        this.technicienRepo = technicienRepo;
+        this.ticketRepo = ticketRepo;
     }
+
     @Override
     public long getTechnicien(int technicienId) {
         return technicienRepo.countTicketsByTechnicien(technicienId);
     }
+
     @Override
     public long getTicketsResolus(int technicienId) {
         return technicienRepo.countTicketsResolusByTechnicien(technicienId);
@@ -38,7 +39,7 @@ public class TechnicienImpl implements TechnicienInterface{
     }
 
     @Override
-    public long getTicketsEncours(int technicienId){
+    public long getTicketsEncours(int technicienId) {
         return technicienRepo.countTicketsEnCoursEtAttente(technicienId);
     }
 
@@ -61,6 +62,45 @@ public class TechnicienImpl implements TechnicienInterface{
                 .orElse(0.0);
     }
 
+    @Override
+    public List<TicketsParJourDTO> getEvolutionParJour(int technicienId) {
+
+
+        List<Object[]> affectes = technicienRepo.ticketTechnicienparjour(technicienId);
+
+   
+        List<Object[]> clotures = technicienRepo.getEvolutionTechnicen(technicienId);
+
+
+        Map<String, Long> affectesParDate = new LinkedHashMap<>();
+        for (Object[] row : affectes) {
+            String date = (String) row[0];
+            long count = ((Number) row[1]).longValue();
+            affectesParDate.put(date, count);
+        }
+
+  
+        Map<String, Long> cloturesParDate = new LinkedHashMap<>();
+        for (Object[] row : clotures) {
+            String date = (String) row[0];
+            long count = ((Number) row[1]).longValue();
+            cloturesParDate.put(date, count);
+        }
+
+   
+        Set<String> toutesLesDates = new TreeSet<>();
+        toutesLesDates.addAll(affectesParDate.keySet());
+        toutesLesDates.addAll(cloturesParDate.keySet());
+
+        return toutesLesDates.stream()
+                .map(date -> new TicketsParJourDTO(
+                        date,
+                        affectesParDate.getOrDefault(date, 0L),
+                        cloturesParDate.getOrDefault(date, 0L)
+                ))
+                .collect(Collectors.toList());
+    }
+
     private LocalDateTime parseDate(String date, DateTimeFormatter... formatters) {
         for (DateTimeFormatter formatter : formatters) {
             try {
@@ -69,4 +109,6 @@ public class TechnicienImpl implements TechnicienInterface{
         }
         throw new IllegalArgumentException("Format de date non reconnu : " + date);
     }
+
+
 }
