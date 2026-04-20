@@ -58,7 +58,7 @@ export const priorityLabel = (priority) => {
 export const statusBadge = (status) => {
   if (!status) return "bg-gray-100 text-gray-600";
   const s = status.toLowerCase().trim();
-  if (s.includes("cloture") || s.includes("ferm")) return "bg-blue-100 text-blue-700 border border-blue-200";
+  if (s.includes("clôturé") || s.includes("cloturé") || s.includes("clotur") || s.includes("ferm")) return "bg-blue-100 text-blue-700 border border-blue-200";
   if (s.includes("resolu")) return "bg-emerald-100 text-emerald-700 border border-emerald-200";
   if (s.includes("cours") || s.includes("affect") || s.includes("attente") || s.includes("escalad")) return "bg-amber-100 text-amber-700 border border-amber-200";
   if (s.includes("ouvert") || s.includes("nouveau")) return "bg-red-100 text-red-700 border border-red-200";

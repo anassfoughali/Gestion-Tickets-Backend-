@@ -124,7 +124,7 @@ const Dashboard = () => {
                       <tr className="text-xs text-gray-400 uppercase border-b">
                         <th className="pb-3 font-medium text-left">N° Ticket</th>
                         <th className="pb-3 font-medium text-left">Objet</th>
-                        <th className="pb-3 font-medium text-left">Technicien</th>
+                        <th className="pb-3 font-medium text-left">Technicien Description</th>
                         <th className="pb-3 font-medium text-left">Priorité</th>
                         <th className="pb-3 font-medium text-left">Statut</th>
                         <th className="pb-3 font-medium text-left">Date</th>

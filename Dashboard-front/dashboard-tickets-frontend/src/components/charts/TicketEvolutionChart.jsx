@@ -10,6 +10,8 @@ import {
   Legend,
 } from 'recharts';
 import { FiDownload, FiFileText } from 'react-icons/fi';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 const BLUE = '#2784c1';
 const GREEN = '#10b981';
@@ -17,80 +19,40 @@ const GREEN = '#10b981';
 const TicketEvolutionChart = ({ data = [], chartRef }) => {
   const internalRef = React.useRef(null);
   const containerRef = chartRef || internalRef;
+  const cardRef = React.useRef(null);
+
+  const captureCanvas = () =>
+    html2canvas(cardRef.current || containerRef.current, {
+      backgroundColor: '#ffffff',
+      scale: 2,
+      useCORS: true,
+      logging: false,
+    });
 
   const handleExportPNG = () => {
-    const container = containerRef.current;
-    if (!container) return;
-    const svg = container.querySelector('svg');
-    if (!svg) return;
-
-    const svgData = new XMLSerializer().serializeToString(svg);
-    const bbox = svg.getBoundingClientRect();
-    const canvas = document.createElement('canvas');
-    canvas.width = bbox.width || 800;
-    canvas.height = bbox.height || 300;
-
-    const img = new Image();
-    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(svgBlob);
-    img.onload = () => {
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0);
-      URL.revokeObjectURL(url);
+    if (!cardRef.current && !containerRef.current) return;
+    captureCanvas().then((canvas) => {
       canvas.toBlob((blob) => {
+        if (!blob) return;
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
         link.download = `evolution-tickets-${new Date().toISOString().slice(0, 10)}.png`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
       }, 'image/png');
-    };
-    img.src = url;
+    });
   };
 
   const handleExportPDF = () => {
-    const container = containerRef.current;
-    if (!container) return;
-    const svg = container.querySelector('svg');
-    if (!svg) return;
-
-    const svgData = new XMLSerializer().serializeToString(svg);
-    const bbox = svg.getBoundingClientRect();
-    const canvas = document.createElement('canvas');
-    canvas.width = bbox.width || 800;
-    canvas.height = bbox.height || 300;
-
-    const img = new Image();
-    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(svgBlob);
-    img.onload = () => {
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0);
-      URL.revokeObjectURL(url);
+    if (!cardRef.current && !containerRef.current) return;
+    captureCanvas().then((canvas) => {
       const imgData = canvas.toDataURL('image/png');
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) {
-        // eslint-disable-next-line no-alert
-        alert("Le navigateur a bloqué la fenêtre popup. Veuillez autoriser les popups pour ce site.");
-        return;
-      }
-      const scriptTag = 'script';
-      printWindow.document.write(
-        '<html><head><title>Evolution des tickets</title></head>' +
-        '<body style="margin:0;padding:20px;font-family:sans-serif;">' +
-        '<h2 style="margin-bottom:16px;">Evolution des tickets (30 jours)</h2>' +
-        `<img src="${imgData}" style="max-width:100%;" />` +
-        `<${scriptTag}>window.onload=function(){window.print();window.close();}</${scriptTag}>` +
-        '</body></html>'
-      );
-      printWindow.document.close();
-    };
-    img.src = url;
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [canvas.width / 2, canvas.height / 2] });
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
+      pdf.save(`evolution-tickets-${new Date().toISOString().slice(0, 10)}.pdf`);
+    });
   };
 
   if (!data || data.length === 0) {
@@ -102,7 +64,7 @@ const TicketEvolutionChart = ({ data = [], chartRef }) => {
   }
 
   return (
-    <div className="p-5 bg-white border border-gray-100 shadow-sm rounded-xl">
+    <div ref={cardRef} className="p-5 bg-white border border-gray-100 shadow-sm rounded-xl">
       <div className="flex items-center justify-between mb-1">
         <div>
           <h3 className="text-sm font-semibold text-gray-700">Evolution des tickets (30 jours)</h3>
