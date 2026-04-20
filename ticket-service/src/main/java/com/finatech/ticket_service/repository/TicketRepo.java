@@ -32,6 +32,21 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
         """, nativeQuery = true)
     long countTicketsEnCours();
 
+    // API - Tickets ouverts par technicien - SQL natif
+    @Query(value = """
+        SELECT g."Description", COUNT(i."IssueID")
+        FROM "ZDEV_GP"."MARISupportIssue" i
+        JOIN "ZDEV_GP"."MARISupportGroup" g
+          ON i."SupportGroupID" = g."GroupId"
+        JOIN "ZDEV_GP"."MARISupportSettings" s
+          ON i."Status" = s."ID" AND s."Setting" = 1
+        WHERE LOWER(s."Matchcode") LIKE '%ouvert%'
+           OR LOWER(s."Matchcode") LIKE '%nouveau%'
+        GROUP BY g."Description"
+        ORDER BY COUNT(i."IssueID") DESC
+        """, nativeQuery = true)
+    List<Object[]> countTicketsOuvertsParTechnicien();
+
     // API - Temps moyen par technicien - SQL natif
     @Query(value = """
         SELECT

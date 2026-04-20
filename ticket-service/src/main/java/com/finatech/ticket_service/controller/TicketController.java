@@ -44,6 +44,11 @@ public class TicketController {
         return ResponseEntity.ok(ticketService.getTicketsClotures());
     }
 
+    @GetMapping("/ouverts/par-technicien")
+    public ResponseEntity<List<TicketsOuvertsParTechnicienDTO>> getTicketsOuvertsParTechnicien() {
+        return ResponseEntity.ok(ticketService.getTicketsOuvertsParTechnicien());
+    }
+
     @GetMapping("/resolution")
     public ResponseEntity<TempsResolutionMoyenDTO> getTempsResolutionMoyen() {
         try {
