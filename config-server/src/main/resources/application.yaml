@@ -9,6 +9,6 @@ spring:
     config:
       server:
         git:
-          uri: file:///C:/Projects/PFEFinatech/config-server/configrepo
+          uri: https://gitlab.com/Foutouh/conffig-repo.git
           default-label: main
-          clone-on-start: false
+          clone-on-start: true
