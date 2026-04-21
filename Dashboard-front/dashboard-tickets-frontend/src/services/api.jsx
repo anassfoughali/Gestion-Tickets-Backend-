@@ -126,12 +126,7 @@ export const technicienService = {
   getStats: (groupId) => api.get(`/techniciens/${groupId}`),
 };
 
-export const rapportsService = {
-  getAll: () => api.get('/tickets/list').then((res) => ({
-    ...res,
-    data: Array.isArray(res.data) ? res.data.map(normalizeTicket) : [],
-  })),
-};
+
 
 export const slaService = {
   getStats: () => api.get('/sla/stats'),

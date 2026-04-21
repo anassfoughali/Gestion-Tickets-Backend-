@@ -1,5 +1,5 @@
 import React from "react";
-import { FiHome, FiList, FiUsers, FiBarChart2, FiShield, FiLogOut } from "react-icons/fi";
+import { FiHome, FiList, FiUsers, FiShield, FiLogOut } from "react-icons/fi";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -9,7 +9,6 @@ const navItems = [
   { icon: <FiHome    size={20} />, label: "Dashboard",   path: "/dashboard"   },
   { icon: <FiList    size={20} />, label: "Tickets",     path: "/tickets"     },
   { icon: <FiUsers   size={20} />, label: "Techniciens", path: "/techniciens" },
-  { icon: <FiBarChart2 size={20}/>, label: "Rapports",   path: "/rapports"    },
   { icon: <FiShield  size={20} />, label: "SLA",         path: "/sla"         },
 ];
 
