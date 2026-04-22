@@ -63,6 +63,14 @@ const colorConfig = {
     barColor:   'bg-amber-400',
     ringColor:  'ring-amber-200',
   },
+  purple: {
+    gradient:   'from-purple-500 to-fuchsia-600',
+    glow:       'shadow-purple-200',
+    textFrom:   '#a855f7',
+    textTo:     '#c026d3',
+    barColor:   'bg-purple-400',
+    ringColor:  'ring-purple-200',
+  },
   teal: {
     gradient:   'from-teal-500 to-cyan-600',
     glow:       'shadow-teal-200',
@@ -117,66 +125,75 @@ const KpiCard = ({ title, value, subtitle, icon, color }) => {
     <div
       className={`
         relative flex flex-col justify-between
-        bg-gradient-to-br from-white to-gray-50/60
-        border border-white/80
+        bg-white
+        border border-gray-100
         rounded-2xl p-5 overflow-hidden
-        shadow-sm ${cfg.glow}
+        shadow-lg shadow-gray-200/50
         transition-shadow duration-200
       `}
     >
-      {/* ── Top accent line ─────────────────────────────────────────────── */}
-      <div className={`absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r ${cfg.gradient} rounded-t-2xl`} />
+      {/* ── Top accent line with enhanced gradient ─────────────────────── */}
+      <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${cfg.gradient} opacity-90`} />
+
+      {/* ── Decorative background pattern ──────────────────────────────── */}
+      <div className="absolute top-0 right-0 w-32 h-32 opacity-5">
+        <div className={`absolute inset-0 bg-gradient-to-br ${cfg.gradient} rounded-full blur-2xl`} />
+      </div>
 
       {/* ── Main row: text left, icon right ─────────────────────────────── */}
-      <div className="flex items-start justify-between gap-3 mt-1">
+      <div className="flex items-start justify-between gap-3 mt-1 relative z-10">
 
         {/* Left: title + value + subtitle */}
         <div className="flex flex-col min-w-0">
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 truncate">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 truncate mb-1">
             {title}
           </p>
 
-          {/* Hero value with text gradient */}
+          {/* Hero value with enhanced text gradient and shadow */}
           <p
             ref={valueRef}
-            className="text-3xl font-black tracking-tight mt-1 leading-none"
+            className="text-4xl font-black tracking-tight leading-none mb-1"
             style={{
               background: `linear-gradient(135deg, ${cfg.textFrom}, ${cfg.textTo})`,
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
+              filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
             }}
           >
             {value ?? '—'}
           </p>
 
           {subtitle && (
-            <p className="text-[11px] text-gray-400 mt-0.5 truncate">{subtitle}</p>
+            <p className="text-[11px] font-medium text-gray-500 truncate">{subtitle}</p>
           )}
         </div>
 
-        {/* Right: gradient icon container */}
+        {/* Right: enhanced gradient icon container with glow */}
         <div
           className={`
             flex-shrink-0
             bg-gradient-to-br ${cfg.gradient}
-            ring-4 ${cfg.ringColor}
-            rounded-2xl p-3 text-white
-            shadow-sm
+            ring-2 ${cfg.ringColor}
+            rounded-xl p-3.5 text-white
+            shadow-lg
           `}
+          style={{
+            boxShadow: `0 8px 16px -4px ${cfg.textFrom}40, 0 4px 8px -2px ${cfg.textFrom}20`,
+          }}
         >
-          <span className="text-[22px] leading-none flex items-center justify-center">
+          <span className="text-[24px] leading-none flex items-center justify-center">
             {icon}
           </span>
         </div>
       </div>
 
-      {/* ── Decorative sparkline ─────────────────────────────────────────── */}
-      <div className="flex items-end gap-[3px] mt-4 h-6">
+      {/* ── Enhanced decorative sparkline with gradient ──────────────────── */}
+      <div className="flex items-end gap-[3px] mt-5 h-7 relative z-10">
         {SPARK_HEIGHTS.map((h, i) => (
           <div
             key={i}
-            className={`flex-1 rounded-sm ${cfg.barColor} opacity-30`}
+            className={`flex-1 rounded-t-sm bg-gradient-to-t ${cfg.gradient} opacity-20`}
             style={{ height: `${h}%` }}
           />
         ))}

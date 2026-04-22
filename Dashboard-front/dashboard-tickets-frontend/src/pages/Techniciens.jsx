@@ -71,14 +71,47 @@ const toDayLabel = (date) =>
 
 const getTechnicien = (t) => t?.description || t?.technicien || "";
 
-/* ── Small KPI card used inside the modal ─────────────────────────────── */
+/* ── Small KPI card used inside the modal - Premium Design ────────────── */
 const ModalKpiCard = ({ value, label, color, icon }) => (
-  <div className="flex flex-col flex-1 min-w-0 p-4 bg-gray-50 border border-gray-100 rounded-xl">
-    <div className="mb-2" style={{ color }}>
+  <div className="relative flex flex-col flex-1 min-w-0 p-5 bg-white border border-gray-200 rounded-2xl shadow-md hover:shadow-lg transition-all duration-200 overflow-hidden">
+    {/* Top accent line */}
+    <div 
+      className="absolute top-0 left-0 right-0 h-1 opacity-80"
+      style={{ background: `linear-gradient(90deg, ${color}, ${color}dd)` }}
+    />
+    
+    {/* Decorative background circle */}
+    <div 
+      className="absolute -top-4 -right-4 w-20 h-20 rounded-full opacity-5"
+      style={{ backgroundColor: color }}
+    />
+    
+    {/* Icon with gradient background */}
+    <div 
+      className="flex items-center justify-center w-10 h-10 mb-3 rounded-xl shadow-sm relative z-10"
+      style={{ 
+        background: `linear-gradient(135deg, ${color}20, ${color}10)`,
+        color: color 
+      }}
+    >
       {icon}
     </div>
-    <p className="text-xl font-bold text-gray-800">{value}</p>
-    <p className="mt-0.5 text-xs text-gray-500">{label}</p>
+    
+    {/* Value with gradient text */}
+    <p 
+      className="text-3xl font-black tracking-tight leading-none mb-1 relative z-10"
+      style={{
+        background: `linear-gradient(135deg, ${color}, ${color}cc)`,
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
+      }}
+    >
+      {value}
+    </p>
+    
+    {/* Label */}
+    <p className="text-xs font-medium text-gray-500 relative z-10">{label}</p>
   </div>
 );
 
