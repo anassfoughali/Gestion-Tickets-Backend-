@@ -166,7 +166,7 @@ const HamburgerMenu = () => {
           left: 0;
           bottom: 0;
           width: 280px;
-          background: white;
+          background: ${BLUE};
           z-index: 1050;
           display: flex;
           flex-direction: column;
@@ -182,8 +182,8 @@ const HamburgerMenu = () => {
         /* Header */
         .menu-header {
           padding: 24px 20px;
-          border-bottom: 1px solid #e5e7eb;
-          background: linear-gradient(135deg, ${BLUE} 0%, #1e6fa3 100%);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+          background: ${BLUE};
         }
 
         .menu-logo {
@@ -228,6 +228,7 @@ const HamburgerMenu = () => {
           flex: 1;
           padding: 16px 12px;
           overflow-y: auto;
+          background: ${BLUE};
         }
 
         .menu-item {
@@ -243,21 +244,22 @@ const HamburgerMenu = () => {
           border-radius: 10px;
           cursor: pointer;
           transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-          color: #4b5563;
+          color: rgba(255, 255, 255, 0.8);
           font-size: 14px;
           font-weight: 500;
           text-align: left;
         }
 
         .menu-item:hover {
-          background: #f3f4f6;
-          color: ${BLUE};
+          background: rgba(255, 255, 255, 0.15);
+          color: white;
         }
 
         .menu-item-active {
-          background: linear-gradient(135deg, ${BLUE}15 0%, ${BLUE}08 100%);
+          background: white;
           color: ${BLUE};
           font-weight: 600;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .menu-item-icon {
@@ -278,14 +280,15 @@ const HamburgerMenu = () => {
           transform: translateY(-50%);
           width: 4px;
           height: 24px;
-          background: ${BLUE};
+          background: white;
           border-radius: 4px 0 0 4px;
         }
 
         /* Footer */
         .menu-footer {
           padding: 16px 12px;
-          border-top: 1px solid #e5e7eb;
+          border-top: 1px solid rgba(255, 255, 255, 0.2);
+          background: ${BLUE};
         }
 
         .logout-button {
@@ -299,14 +302,14 @@ const HamburgerMenu = () => {
           border-radius: 10px;
           cursor: pointer;
           transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-          color: #ef4444;
+          color: rgba(255, 255, 255, 0.8);
           font-size: 14px;
           font-weight: 500;
         }
 
         .logout-button:hover {
-          background: #fef2f2;
-          color: #dc2626;
+          background: rgba(239, 68, 68, 0.2);
+          color: #fecaca;
         }
 
         /* Responsive */
