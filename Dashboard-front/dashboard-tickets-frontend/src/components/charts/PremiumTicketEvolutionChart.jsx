@@ -24,6 +24,7 @@ const COLORS = {
     light: '#9CA3AF',
   },
   grid: 'rgba(0, 0, 0, 0.05)',
+  background: 'linear-gradient(135deg, #FFFFFF 0%, #FAFBFC 100%)',
 };
 
 // Custom Tooltip Component
@@ -66,7 +67,7 @@ const CustomLegend = ({ payload }) => {
   );
 };
 
-const TicketEvolutionChart = ({ data = [], chartRef }) => {
+const PremiumTicketEvolutionChart = ({ data = [], chartRef }) => {
   const internalRef = React.useRef(null);
   const containerRef = chartRef || internalRef;
   const cardRef = React.useRef(null);
@@ -99,7 +100,11 @@ const TicketEvolutionChart = ({ data = [], chartRef }) => {
     if (!cardRef.current && !containerRef.current) return;
     captureCanvas().then((canvas) => {
       const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [canvas.width / 2, canvas.height / 2] });
+      const pdf = new jsPDF({ 
+        orientation: 'landscape', 
+        unit: 'px', 
+        format: [canvas.width / 2, canvas.height / 2] 
+      });
       pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
       pdf.save(`evolution-tickets-${new Date().toISOString().slice(0, 10)}.pdf`);
     });
@@ -148,7 +153,7 @@ const TicketEvolutionChart = ({ data = [], chartRef }) => {
             data={data} 
             margin={{ top: 20, right: 30, bottom: 20, left: 20 }}
           >
-            {/* Gradient Definitions - Bleu ciel pour Total, Vert pour Clôturés */}
+            {/* Gradient Definitions */}
             <defs>
               <linearGradient id="colorTickets" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor={COLORS.primary} stopOpacity={0.8} />
@@ -195,7 +200,24 @@ const TicketEvolutionChart = ({ data = [], chartRef }) => {
               wrapperStyle={{ paddingTop: '20px' }}
             />
 
-            {/* Areas - Ordre inversé: Clôturés en premier (Vert), puis Total (Bleu ciel) */}
+            {/* Areas */}
+            <Area
+              type="monotone"
+              dataKey="totalTickets"
+              name="Tickets créés"
+              stroke={COLORS.primary}
+              strokeWidth={3}
+              fill="url(#colorTickets)"
+              dot={{ r: 0, fill: COLORS.primary }}
+              activeDot={{ 
+                r: 6, 
+                fill: COLORS.primary,
+                stroke: '#fff',
+                strokeWidth: 2,
+              }}
+              animationDuration={1500}
+              animationEasing="ease-out"
+            />
             <Area
               type="monotone"
               dataKey="closedTickets"
@@ -213,23 +235,6 @@ const TicketEvolutionChart = ({ data = [], chartRef }) => {
               animationDuration={1500}
               animationEasing="ease-out"
             />
-            <Area
-              type="monotone"
-              dataKey="totalTickets"
-              name="Total tickets"
-              stroke={COLORS.primary}
-              strokeWidth={3}
-              fill="url(#colorTickets)"
-              dot={{ r: 0, fill: COLORS.primary }}
-              activeDot={{ 
-                r: 6, 
-                fill: COLORS.primary,
-                stroke: '#fff',
-                strokeWidth: 2,
-              }}
-              animationDuration={1500}
-              animationEasing="ease-out"
-            />
           </AreaChart>
         </ResponsiveContainer>
       </div>
@@ -237,4 +242,4 @@ const TicketEvolutionChart = ({ data = [], chartRef }) => {
   );
 };
 
-export default TicketEvolutionChart;
+export default PremiumTicketEvolutionChart;
