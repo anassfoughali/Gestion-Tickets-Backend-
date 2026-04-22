@@ -1,6 +1,6 @@
 import React from "react";
-import Sidebar from "../components/layout/Sidebar";
 import Topbar  from "../components/layout/Topbar";
+import HamburgerMenu from "../components/layout/HamburgerMenu";
 import useTickets from "../hooks/useTickets";
 import KpiCard from "../components/cards/KpiCard";
 import TicketEvolutionChart from "../components/charts/TicketEvolutionChart";
@@ -238,10 +238,10 @@ const Tickets = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
-      <div className="flex flex-col flex-1 overflow-hidden">
+      <HamburgerMenu />
+      <div className="flex flex-col flex-1 w-full">
         <Topbar />
-        <main className="flex-1 p-6 space-y-6 overflow-y-auto">
+        <main className="flex-1 p-6 space-y-6 overflow-y-auto" style={{ paddingLeft: '80px' }}>
 
           {/* Header */}
           <div className="flex items-center justify-between">
