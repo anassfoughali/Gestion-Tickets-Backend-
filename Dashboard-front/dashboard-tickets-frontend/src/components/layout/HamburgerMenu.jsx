@@ -297,36 +297,26 @@ const HamburgerMenu = () => {
           gap: 12px;
           width: 100%;
           padding: 12px 16px;
-          background: transparent;
+          background: #dc2626;
           border: none;
           border-radius: 10px;
           cursor: pointer;
           transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-          color: rgba(255, 255, 255, 0.8);
+          color: white;
           font-size: 14px;
-          font-weight: 500;
+          font-weight: 600;
         }
 
         .logout-button:hover {
-          background: rgba(239, 68, 68, 0.2);
-          color: #fecaca;
+          background: #b91c1c;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
         }
 
         .logout-button:active {
-          background: #ef4444;
-          color: white;
+          background: #991b1b;
           transform: scale(0.98);
           box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.3);
-        }
-
-        /* Footer turns red when logout button is active */
-        .logout-button:active ~ * {
-          background: #dc2626;
-        }
-
-        .menu-footer:has(.logout-button:active) {
-          background: #dc2626 !important;
-          border-top-color: rgba(255, 255, 255, 0.3);
         }
 
         /* Responsive */
