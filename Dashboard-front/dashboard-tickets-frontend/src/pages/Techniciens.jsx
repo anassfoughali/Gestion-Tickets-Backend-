@@ -1,6 +1,6 @@
 import React from "react";
+import Sidebar from "../components/layout/Sidebar";
 import Topbar from "../components/layout/Topbar";
-import HamburgerMenu from "../components/layout/HamburgerMenu";
 import useTickets from "../hooks/useTickets";
 import TicketEvolutionChart from "../components/charts/TicketEvolutionChart";
 import {
@@ -461,10 +461,10 @@ const Techniciens = () => {
   return (
     <>
       <div className="flex min-h-screen bg-gray-50">
-        <HamburgerMenu />
-        <div className="flex flex-col flex-1 w-full">
+        <Sidebar />
+        <div className="flex flex-col flex-1 overflow-hidden">
           <Topbar />
-          <main className="flex-1 p-6 space-y-6 overflow-y-auto" style={{ paddingLeft: '80px' }}>
+          <main className="flex-1 p-6 space-y-6 overflow-y-auto">
 
             {/* Header */}
             <div className="flex items-center justify-between">
