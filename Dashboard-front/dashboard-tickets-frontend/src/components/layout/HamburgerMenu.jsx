@@ -313,9 +313,20 @@ const HamburgerMenu = () => {
         }
 
         .logout-button:active {
-          background: #dc2626;
+          background: #ef4444;
           color: white;
           transform: scale(0.98);
+          box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Footer turns red when logout button is active */
+        .logout-button:active ~ * {
+          background: #dc2626;
+        }
+
+        .menu-footer:has(.logout-button:active) {
+          background: #dc2626 !important;
+          border-top-color: rgba(255, 255, 255, 0.3);
         }
 
         /* Responsive */
