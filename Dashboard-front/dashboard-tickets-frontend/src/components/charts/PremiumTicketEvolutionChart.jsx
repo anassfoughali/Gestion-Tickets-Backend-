@@ -72,13 +72,26 @@ const PremiumTicketEvolutionChart = ({ data = [], chartRef }) => {
   const containerRef = chartRef || internalRef;
   const cardRef = React.useRef(null);
 
-  const captureCanvas = () =>
-    html2canvas(cardRef.current || containerRef.current, {
+  const captureCanvas = () => {
+    // Hide export buttons before capture
+    const exportButtons = cardRef.current?.querySelector('.export-buttons');
+    if (exportButtons) {
+      exportButtons.style.display = 'none';
+    }
+
+    return html2canvas(cardRef.current || containerRef.current, {
       backgroundColor: '#ffffff',
       scale: 2,
       useCORS: true,
       logging: false,
+    }).then((canvas) => {
+      // Show export buttons after capture
+      if (exportButtons) {
+        exportButtons.style.display = 'flex';
+      }
+      return canvas;
     });
+  };
 
   const handleExportPNG = () => {
     if (!cardRef.current && !containerRef.current) return;
