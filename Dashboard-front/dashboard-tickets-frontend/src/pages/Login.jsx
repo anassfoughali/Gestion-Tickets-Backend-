@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { FiUser, FiLock, FiEye, FiEyeOff, FiAlertCircle } from "react-icons/fi";
@@ -59,9 +59,17 @@ const Login = () => {
         <div className="absolute -bottom-28 -right-20 w-[28rem] h-[28rem] rounded-full opacity-10 bg-white" />
         <div className="absolute top-1/3 right-0 w-52 h-52 rounded-full opacity-5 bg-white" />
 
-        {/* Logo */}
-        <div className="relative z-10 w-full">
-          <img src={logo} alt="Finatech Group" className="h-56 object-contain" />
+        {/* Logo - Immense et visible */}
+        <div className="relative z-10 w-full flex justify-center mb-4 animate-fade-in">
+          <div className="relative">
+            {/* Glow effect */}
+            <div className="absolute inset-0 bg-white opacity-20 blur-3xl rounded-full scale-110" />
+            <img 
+              src={logo} 
+              alt="Finatech Group" 
+              className="h-56 object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-300"
+            />
+          </div>
         </div>
 
         {/* Texte central */}
@@ -102,9 +110,18 @@ const Login = () => {
       <div className="flex flex-1 items-center justify-center bg-white p-8">
         <div className="w-full max-w-sm">
 
-          {/* Logo mobile */}
-          <div className="flex flex-col items-center mb-8 lg:hidden">
-            <img src={logo} alt="Finatech Group" className="h-12 object-contain mb-3" />
+          {/* Logo mobile - Plus grand et visible */}
+          <div className="flex flex-col items-center mb-10 lg:hidden">
+            <div className="relative mb-4">
+              {/* Glow effect mobile */}
+              <div className="absolute inset-0 bg-blue-400 opacity-10 blur-2xl rounded-full scale-110" />
+              <img 
+                src={logo} 
+                alt="Finatech Group" 
+                className="h-24 object-contain drop-shadow-lg"
+              />
+            </div>
+            <h1 className="text-2xl font-black text-gray-800 text-center">Finatech</h1>
           </div>
 
           {/* Header */}
