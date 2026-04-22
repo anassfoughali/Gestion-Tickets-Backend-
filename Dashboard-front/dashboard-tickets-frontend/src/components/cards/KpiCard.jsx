@@ -116,13 +116,12 @@ const KpiCard = ({ title, value, subtitle, icon, color }) => {
   return (
     <div
       className={`
-        group relative flex flex-col justify-between
+        relative flex flex-col justify-between
         bg-gradient-to-br from-white to-gray-50/60
         border border-white/80
         rounded-2xl p-5 overflow-hidden
         shadow-sm ${cfg.glow}
-        hover:-translate-y-0.5 hover:shadow-md
-        transition-all duration-200 cursor-default
+        transition-shadow duration-200
       `}
     >
       {/* ── Top accent line ─────────────────────────────────────────────── */}
@@ -163,7 +162,6 @@ const KpiCard = ({ title, value, subtitle, icon, color }) => {
             bg-gradient-to-br ${cfg.gradient}
             ring-4 ${cfg.ringColor}
             rounded-2xl p-3 text-white
-            group-hover:scale-105 transition-transform duration-200
             shadow-sm
           `}
         >
