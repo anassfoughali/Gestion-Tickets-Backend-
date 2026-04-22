@@ -312,6 +312,12 @@ const HamburgerMenu = () => {
           color: #fecaca;
         }
 
+        .logout-button:active {
+          background: #dc2626;
+          color: white;
+          transform: scale(0.98);
+        }
+
         /* Responsive */
         @media (min-width: 1024px) {
           .hamburger-menu {
