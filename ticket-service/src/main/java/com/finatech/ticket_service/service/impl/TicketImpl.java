@@ -2,6 +2,7 @@ package com.finatech.ticket_service.service.impl;
 import com.finatech.ticket_service.dto.TempsResolutionMoyenDTO;
 import com.finatech.ticket_service.dto.TicketCompletDTO;
 import com.finatech.ticket_service.dto.TicketEvolutionParJourDTO;
+import com.finatech.ticket_service.dto.TopTechnicienDTO;
 import com.finatech.ticket_service.repository.TicketRepo;
 import com.finatech.ticket_service.service.TicketInterfaceService;
 import org.springframework.stereotype.Service;
@@ -68,6 +69,19 @@ public class TicketImpl  implements TicketInterfaceService {
                         (String) row[8],                 // client
                         (String) row[9]                  // IssueType
                 )).toList();
+    }
+
+    @Override
+    public List<TopTechnicienDTO> getTop5TechniciensByClotures() {
+        // Appel du repository
+        List<Object[]> results = ticketRepo.getTop5TechniciensByClotures();
+        // Mapping vers DTO
+        return results.stream()
+                .map(row -> new TopTechnicienDTO(
+                        (String) row[0],                           // technicien
+                        row[1] != null ? ((Number) row[1]).longValue() : 0L  // nombreTicketsClotures
+                ))
+                .collect(Collectors.toList());
     }
 
 }

@@ -118,6 +118,7 @@ export const ticketsService = {
       data: Array.isArray(res.data) ? res.data.map(normalizeDayStat) : [],
     };
   }),
+  getTopTechniciens:    () => api.get('/tickets/top-techniciens'), // → List<TopTechnicienDTO>
 };
 
 export const technicienService = {

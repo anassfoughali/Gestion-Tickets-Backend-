@@ -198,4 +198,28 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
         """, nativeQuery = true)
     List<Object[]> getTicketsComplets();
 
+    // API - Top 5 techniciens par nombre de tickets clôturés - SQL natif
+    @Query(value = """
+        SELECT 
+            g."Description" AS technicien,
+            COUNT(i."IssueID") AS nombreTicketsClotures
+        FROM "ZDEV_GP"."MARISupportIssue" i
+        JOIN "ZDEV_GP"."MARISupportGroup" g
+            ON i."SupportGroupID" = g."GroupId"
+        JOIN "ZDEV_GP"."MARISupportSettings" s
+            ON i."Status" = s."ID"
+            AND s."Setting" = 1
+        WHERE (
+            LOWER(s."Matchcode") LIKE '%fermé%'
+            OR LOWER(s."Matchcode") LIKE '%ferme%'
+            OR LOWER(s."Matchcode") LIKE '%clôturé%'
+            OR LOWER(s."Matchcode") LIKE '%cloture%'
+            OR LOWER(s."Matchcode") LIKE '%clos%'
+        )
+        GROUP BY g."Description"
+        ORDER BY COUNT(i."IssueID") DESC
+        LIMIT 5
+        """, nativeQuery = true)
+    List<Object[]> getTop5TechniciensByClotures();
+
 }

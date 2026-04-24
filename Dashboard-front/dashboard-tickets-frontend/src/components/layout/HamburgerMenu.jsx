@@ -53,7 +53,7 @@ const HamburgerMenu = () => {
       {/* Hamburger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="hamburger-button"
+        className={`hamburger-button ${isOpen ? "hamburger-button-hidden" : ""}`}
         aria-label="Toggle menu"
         aria-expanded={isOpen}
       >
@@ -80,6 +80,13 @@ const HamburgerMenu = () => {
               <p className="company-subtitle">Support Manager</p>
             </div>
           </div>
+          <button
+            onClick={() => setIsOpen(false)}
+            className="close-button"
+            aria-label="Close menu"
+          >
+            <FiX size={24} />
+          </button>
         </div>
 
         {/* Navigation */}
@@ -142,6 +149,12 @@ const HamburgerMenu = () => {
           transform: scale(0.95);
         }
 
+        .hamburger-button-hidden {
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+        }
+
         /* Backdrop */
         .menu-backdrop {
           position: fixed;
@@ -184,12 +197,16 @@ const HamburgerMenu = () => {
           padding: 24px 20px;
           border-bottom: 1px solid rgba(255, 255, 255, 0.2);
           background: ${BLUE};
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
         }
 
         .menu-logo {
           display: flex;
           align-items: center;
           gap: 12px;
+          flex: 1;
         }
 
         .logo-icon {
@@ -221,6 +238,31 @@ const HamburgerMenu = () => {
           font-size: 12px;
           color: rgba(255, 255, 255, 0.8);
           margin: 0;
+        }
+
+        /* Close Button */
+        .close-button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          background: rgba(255, 255, 255, 0.2);
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          color: white;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          flex-shrink: 0;
+        }
+
+        .close-button:hover {
+          background: rgba(255, 255, 255, 0.3);
+          transform: scale(1.05);
+        }
+
+        .close-button:active {
+          transform: scale(0.95);
         }
 
         /* Navigation */

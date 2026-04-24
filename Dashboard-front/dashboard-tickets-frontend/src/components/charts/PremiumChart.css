@@ -87,23 +87,24 @@
 }
 
 .export-btn-secondary {
-  background-color: #F3F4F6;
+  background-color: #FFFFFF;
   color: #4B5563;
+  border: 1px solid #E5E7EB;
 }
 
 .export-btn-secondary:hover {
-  background-color: #E5E7EB;
+  background-color: #F9FAFB;
 }
 
 .export-btn-primary {
-  background-color: #6366F1;
+  background-color: #1F2937;
   color: #FFFFFF;
-  box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .export-btn-primary:hover {
-  background-color: #4F46E5;
-  box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+  background-color: #111827;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Chart Container */
