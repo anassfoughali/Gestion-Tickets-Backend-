@@ -3,7 +3,7 @@ import Topbar  from "../components/layout/Topbar";
 import HamburgerMenu from "../components/layout/HamburgerMenu";
 import KpiCard from "../components/cards/KpiCard";
 import TicketsPerDayChart  from "../components/charts/TicketsPerDayChart";
-import TechnicianPerformanceChart from "../components/charts/TechnicianPerformanceChart";
+import TechnicianPodiumChart from "../components/charts/TechnicianPodiumChart";
 import ResolutionTimeChart  from "../components/charts/ResolutionTimeChart";
 import useDashboard from "../hooks/useDashboard";
 import {
@@ -93,7 +93,7 @@ const Dashboard = () => {
           {/* Charts Row 1 - Enhanced spacing */}
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
             <TicketsPerDayChart data={parJour}   />
-            <TechnicianPerformanceChart data={topTechniciensCloture} metric="closed" />
+            <TechnicianPodiumChart data={topTechniciensCloture} />
           </div>
 
           {/* Charts Row 2 - Optimized layout */}
