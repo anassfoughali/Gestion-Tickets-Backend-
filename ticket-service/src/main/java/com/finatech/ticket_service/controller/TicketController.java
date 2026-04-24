@@ -77,4 +77,14 @@ public class TicketController {
         }
     }
 
+    @GetMapping("/top-techniciens")
+    public ResponseEntity<List<TopTechnicienDTO>> getTop5TechniciensByClotures(){
+        try{
+            List<TopTechnicienDTO> topTechniciens = ticketImpl.getTop5TechniciensByClotures();
+            return ResponseEntity.ok(topTechniciens);
+        }catch (Exception e ){
+            return ResponseEntity.status(500).build();
+        }
+    }
+
 }

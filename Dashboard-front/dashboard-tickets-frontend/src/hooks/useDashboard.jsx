@@ -53,6 +53,7 @@ const useDashboard = () => {
         allTickets,
         parJour,
         slaResult,
+        topTechniciensApi,
       ] =
         await Promise.all([
           ticketsService.getTotal(),             // → Long
@@ -65,6 +66,7 @@ const useDashboard = () => {
           ticketsService.getAll(),
           ticketsService.getStatsParJour(),
           slaService.getStats().catch(() => ({ data: null })),
+          ticketsService.getTopTechniciens(),    // → List<TopTechnicienDTO>
         ]);
 
       const tickets = Array.isArray(allTickets.data) ? allTickets.data : [];
@@ -77,17 +79,13 @@ const useDashboard = () => {
         })
         .slice(0, 6);
 
-      const closedByTech = tickets.reduce((acc, t) => {
-        if (!isClosedStatus(t?.status)) return acc;
-        const key = (t?.technicien || 'N/A').toString().trim() || 'N/A';
-        acc[key] = (acc[key] || 0) + 1;
-        return acc;
-      }, {});
-
-      const topTechniciensCloture = Object.entries(closedByTech)
-        .map(([technicien, closedTickets]) => ({ technicien, closedTickets }))
-        .sort((a, b) => b.closedTickets - a.closedTickets)
-        .slice(0, 5);
+      // Utiliser les données de l'API backend au lieu du calcul frontend
+      const topTechniciensCloture = Array.isArray(topTechniciensApi.data) 
+        ? topTechniciensApi.data.map(t => ({
+            technicien: t.technicien,
+            closedTickets: t.nombreTicketsClotures
+          }))
+        : [];
 
       const cloturesFallback = tickets.filter((t) => {
         const s = String(t?.status || '').toLowerCase().trim();

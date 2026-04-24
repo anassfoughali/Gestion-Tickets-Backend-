@@ -313,8 +313,7 @@ const TechnicienModal = ({ technicien, tickets, onClose }) => {
               </button>
               <button
                 onClick={() => captureAndExport("pdf")}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-lg transition"
-                style={{ backgroundColor: "#0B1F3A" }}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-gray-800 rounded-lg hover:bg-gray-900 transition"
               >
                 <FiDownload size={12} />
                 PDF
@@ -361,8 +360,7 @@ const TechnicienModal = ({ technicien, tickets, onClose }) => {
         <div className="flex justify-end mt-4">
           <button
             onClick={onClose}
-            className="px-5 py-2 text-sm font-medium text-white rounded-lg transition"
-            style={{ backgroundColor: "#0B1F3A" }}
+            className="px-5 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition"
           >
             Fermer
           </button>
