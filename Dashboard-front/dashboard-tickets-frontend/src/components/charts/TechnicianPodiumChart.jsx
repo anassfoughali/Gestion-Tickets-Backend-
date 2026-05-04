@@ -50,7 +50,7 @@ const TechnicianPodiumChart = ({ data = [] }) => {
         <p className="chart-subtitle">Classement par nombre de tickets clôturés</p>
       </div>
 
-      <div className="podium-container" style={{ padding: '20px 10px' }}>
+      <div className="podium-container" style={{ padding: '12px 8px' }}>
         {topTechnicians.map((tech, index) => {
           const rank = index + 1;
           const colors = PODIUM_COLORS[rank];
@@ -64,8 +64,8 @@ const TechnicianPodiumChart = ({ data = [] }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '12px',
-                padding: '12px',
-                marginBottom: '10px',
+                padding: '10px',
+                marginBottom: '8px',
                 borderRadius: '12px',
                 backgroundColor: rank === 1 ? '#FFF9E6' : rank === 2 ? '#F5F5F5' : rank === 3 ? '#FFF4E6' : '#F8F9FF',
                 border: `2px solid ${colors.bg}`,
@@ -84,14 +84,14 @@ const TechnicianPodiumChart = ({ data = [] }) => {
               {/* Rank Badge */}
               <div
                 style={{
-                  minWidth: '50px',
-                  height: '50px',
+                  minWidth: '45px',
+                  height: '45px',
                   borderRadius: '50%',
                   backgroundColor: colors.bg,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '24px',
+                  fontSize: '22px',
                   fontWeight: 'bold',
                   color: 'white',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
@@ -179,8 +179,8 @@ const TechnicianPodiumChart = ({ data = [] }) => {
       {/* Footer Stats */}
       <div
         style={{
-          marginTop: '16px',
-          padding: '12px',
+          marginTop: '12px',
+          padding: '10px',
           borderRadius: '8px',
           backgroundColor: '#F9FAFB',
           display: 'flex',

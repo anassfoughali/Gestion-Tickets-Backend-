@@ -346,6 +346,16 @@ const Tickets = () => {
               <>
                 {tickets.length === 0 ? (
                   <p className="py-12 text-sm text-center text-gray-400">Aucun ticket disponible</p>
+                ) : filteredTickets.length === 0 ? (
+                  <p className="py-12 text-sm text-center text-gray-400">
+                    {activeFilter === "resolu" && activePriorityFilter !== "tous"
+                      ? `Aucun ticket résolu avec priorité ${PRIORITY_FILTERS.find(f => f.key === activePriorityFilter)?.label.toLowerCase()}`
+                      : activeFilter === "resolu"
+                      ? "Aucun ticket résolu"
+                      : activePriorityFilter !== "tous"
+                      ? `Aucun ticket avec priorité ${PRIORITY_FILTERS.find(f => f.key === activePriorityFilter)?.label.toLowerCase()}`
+                      : "Aucun ticket trouvé pour ce filtre"}
+                  </p>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
@@ -394,7 +404,8 @@ const Tickets = () => {
                 )}
 
                 {/* Pagination */}
-                <div className="flex items-center justify-between pt-4 mt-4 border-t border-gray-100">
+                {filteredTickets.length > 0 && (
+                  <div className="flex items-center justify-between pt-4 mt-4 border-t border-gray-100">
                   <p className="text-xs text-gray-500">
                     Affichage {filteredTickets.length === 0 ? 0 : (currentPage - 1) * ROWS_PER_PAGE + 1}–
                     {Math.min(currentPage * ROWS_PER_PAGE, filteredTickets.length)} sur {filteredTickets.length}
@@ -429,6 +440,7 @@ const Tickets = () => {
                     </button>
                   </div>
                 </div>
+                )}
               </>
             ) : (
               /* Chart View */
