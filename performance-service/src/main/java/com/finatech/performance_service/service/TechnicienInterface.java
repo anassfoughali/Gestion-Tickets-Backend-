@@ -1,10 +1,7 @@
 package com.finatech.performance_service.service;
-
 import com.finatech.performance_service.dto.TicketsParJourDTO;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-
 @Service
 public interface TechnicienInterface {
 

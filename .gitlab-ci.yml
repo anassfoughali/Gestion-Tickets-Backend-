@@ -55,7 +55,7 @@ build:ticket-service:
     - chmod +x ./mvnw
     - ./mvnw package -DskipTests -Dmaven.repo.local=.m2/repository
 
-build:performance-service:
+build:performance-service:é
   stage: build
   image: maven:3.9-eclipse-temurin-17
   cache:
@@ -90,7 +90,7 @@ build:dashboard-front:
   script:
     - cd Dashboard-front/dashboard-tickets-frontend
     - npm install
-    - npm run build
+    - npm start
   artifacts:
     paths:
       - Dashboard-front/dashboard-tickets-frontend/build/

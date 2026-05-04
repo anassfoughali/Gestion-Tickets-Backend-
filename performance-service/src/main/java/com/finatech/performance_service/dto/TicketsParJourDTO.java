@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class TicketsParJourDTO {
-
     private  String date ;
     private  long nbAffectes ;
     private long nbClotures ;

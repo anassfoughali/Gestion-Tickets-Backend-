@@ -1,12 +1,9 @@
 package com.finatech.performance_service.controller;
-
 import com.finatech.performance_service.dto.TicketsParJourDTO;
 import com.finatech.performance_service.service.TechnicienImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/technicien")
 public class TechnienController {
