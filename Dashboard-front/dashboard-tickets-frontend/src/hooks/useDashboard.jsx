@@ -1,18 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ticketsService, slaService } from '../services/api';
 
-const isClosedStatus = (status = '') => {
-  const s = String(status).toLowerCase().trim();
-  return (
-    s.includes('clotur') ||
-    s.includes('clotur') ||
-    s.includes('ferm') ||
-    s.includes('resolu') ||
-    s.includes('resolu') ||
-    s.includes('closed')
-  );
-};
-
 const parseTicketDate = (value) => {
   if (!value) return null;
   if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;

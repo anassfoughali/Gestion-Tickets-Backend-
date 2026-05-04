@@ -8,9 +8,7 @@ import {
   priorityBadge,
   isCloture,
   isResolu,
-  isEnCours,
   isOuvert,
-  normalizePriority,
   priorityLabel,
 } from "../utils/statusHelpers";
 import {
