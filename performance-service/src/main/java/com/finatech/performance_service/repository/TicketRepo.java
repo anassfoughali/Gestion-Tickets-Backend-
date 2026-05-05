@@ -17,7 +17,7 @@ public interface TicketRepo extends JpaRepository<Ticket, Integer> {
     FROM "ZDEV_GP"."MARISupportIssue" i
     JOIN "ZDEV_GP"."MARISupportSettings" s
       ON i."Status" = s."ID" AND s."Setting" = 1
-    WHERE i."SupportGroupID" = :technicienId
+    WHERE i."SupportGroupID" = :technicienIdè
       AND i."USER_DateCloture" IS NOT NULL
       AND i."USER_DateReceptionEmail" IS NOT NULL
       AND (

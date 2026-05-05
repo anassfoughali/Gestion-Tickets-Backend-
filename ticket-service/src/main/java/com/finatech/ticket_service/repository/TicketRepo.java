@@ -222,4 +222,63 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
         """, nativeQuery = true)
     List<Object[]> getTop5TechniciensByClotures();
 
+    // ========================================================================
+    // NOUVELLE FONCTIONNALITÉ : FILTRAGE PAR INTERVALLE DE DATES ET PRIORITÉ
+    // ========================================================================
+
+    // TODO: Créer la méthode countTicketsArrivesParIntervalleEtPriorite
+    // - Ajouter l'annotation @Query avec nativeQuery = true
+    // - Paramètres : 
+    //   * @Param("dateDebut") LocalDate dateDebut
+    //   * @Param("dateFin") LocalDate dateFin
+    //   * @Param("priorite") String priorite
+    // - Type de retour : Long
+    // 
+    // - La requête SQL doit :
+    //   * Compter les tickets (COUNT) depuis la table MARISupportIssue
+    //   * Joindre avec MARISupportSettings pour récupérer la priorité (Setting = 3)
+    //   * Filtrer sur la date de création (USER_DateReceptionEmail)
+    //     - Convertir USER_DateReceptionEmail en DATE avec TO_DATE(..., 'DD/MM/YYYY HH24:MI')
+    //     - Vérifier que la date est >= :dateDebut
+    //     - Vérifier que la date est <= :dateFin
+    //   * Filtrer sur la priorité avec s."Matchcode" = :priorite
+    //   * Gérer les valeurs NULL pour USER_DateReceptionEmail
+    //
+    // Exemple de structure SQL :
+    // SELECT COUNT(i."IssueID")
+    // FROM "ZDEV_GP"."MARISupportIssue" i
+    // JOIN "ZDEV_GP"."MARISupportSettings" s ON ...
+    // WHERE ... (conditions sur dates et priorité)
+
+
+    // TODO: Créer la méthode countTicketsClouresParIntervalleEtPriorite
+    // - Ajouter l'annotation @Query avec nativeQuery = true
+    // - Paramètres :
+    //   * @Param("dateDebut") LocalDate dateDebut
+    //   * @Param("dateFin") LocalDate dateFin
+    //   * @Param("priorite") String priorite
+    // - Type de retour : Long
+    //
+    // - La requête SQL doit :
+    //   * Compter les tickets (COUNT) depuis la table MARISupportIssue
+    //   * Joindre avec MARISupportSettings pour récupérer :
+    //     - La priorité (Setting = 3)
+    //     - Le statut (Setting = 1)
+    //   * Filtrer sur la date de clôture (USER_DateCloture)
+    //     - Vérifier que USER_DateCloture >= :dateDebut
+    //     - Vérifier que USER_DateCloture <= :dateFin
+    //   * Filtrer sur la priorité avec s_priority."Matchcode" = :priorite
+    //   * Filtrer sur le statut clôturé avec :
+    //     - LOWER(s_status."Matchcode") LIKE '%fermé%'
+    //     - OU LOWER(s_status."Matchcode") LIKE '%clôturé%'
+    //     - OU LOWER(s_status."Matchcode") LIKE '%clos%'
+    //   * Gérer les valeurs NULL pour USER_DateCloture
+    //
+    // Exemple de structure SQL :
+    // SELECT COUNT(i."IssueID")
+    // FROM "ZDEV_GP"."MARISupportIssue" i
+    // JOIN "ZDEV_GP"."MARISupportSettings" s_priority ON ... (Setting = 3)
+    // JOIN "ZDEV_GP"."MARISupportSettings" s_status ON ... (Setting = 1)
+    // WHERE ... (conditions sur dates, priorité et statut)
+
 }

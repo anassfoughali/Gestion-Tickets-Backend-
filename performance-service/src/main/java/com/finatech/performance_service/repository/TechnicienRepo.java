@@ -73,6 +73,11 @@ public interface TechnicienRepo extends JpaRepository<Technicien, Integer> {
     // Retourner date (YYYY-MM-DD) + COUNT(IssueID) → List<Object[]>
     //tickets affectés par jour
 
+
+
+
+
+
     @Query(value = """
 SELECT
     TO_VARCHAR(TO_DATE(SUBSTR("USER_DateReceptionEmail", 1, 10), 'DD/MM/YYYY'), 'YYYY-MM-DD') AS date,
