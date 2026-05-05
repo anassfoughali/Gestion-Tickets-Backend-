@@ -92,7 +92,7 @@ public class TicketImpl  implements TicketInterfaceService {
                 .collect(Collectors.toList());
     }
     @Override
-    public TicketEvolutionFilteredDTO getTicketEvolutionFiltred(
+    public TicketEvolutionFilteredDTO getTicketEvolutionFiltered(
             LocalDate dateDebut,
             LocalDate dateFin,
             String priorite) {

@@ -231,13 +231,13 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
     @Query(
             value = """
         SELECT COUNT(*)
-        FROM MARISupportIssue i
-        JOIN MARISupportSettings s 
+        FROM "ZDEV_GP"."MARISupportIssue" i
+        JOIN "ZDEV_GP"."MARISupportSettings" s 
             ON s."ID" = i."Priority"
             AND s."Setting" = 3
         WHERE i."USER_DateReceptionEmail" IS NOT NULL
-          AND TO_DATE(i."USER_DateReceptionEmail", 'DD/MM/YYYY HH24:MI') >= :dateDebut
-          AND TO_DATE(i."USER_DateReceptionEmail", 'DD/MM/YYYY HH24:MI') <= :dateFin
+          AND TO_DATE(SUBSTRING(i."USER_DateReceptionEmail", 1, 10), 'DD/MM/YYYY') >= :dateDebut
+          AND TO_DATE(SUBSTRING(i."USER_DateReceptionEmail", 1, 10), 'DD/MM/YYYY') <= :dateFin
           AND s."Matchcode" = :priorite
     """,
             nativeQuery = true
@@ -250,30 +250,28 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
             );
 
     @Query(value = """
-
         SELECT COUNT(*)
-        FROM MARISupportIssue i
-        JOIN MARISupportSettings s_priority
+        FROM "ZDEV_GP"."MARISupportIssue" i
+        JOIN "ZDEV_GP"."MARISupportSettings" s_priority
             ON s_priority."ID" = i."Priority"
             AND s_priority."Setting" = 3
-        JOIN MARISupportSettings s_status
+        JOIN "ZDEV_GP"."MARISupportSettings" s_status
             ON s_status."ID" = i."Status"
             AND s_status."Setting" = 1
         WHERE i."USER_DateCloture" IS NOT NULL
-          AND TO_DATE(i."USER_DateCloture", 'DD/MM/YYYY HH24:MI') >= :dateDebut
-          AND TO_DATE(i."USER_DateCloture", 'DD/MM/YYYY HH24:MI') <= :dateFin
+          AND i."USER_DateCloture" >= :dateDebut
+          AND i."USER_DateCloture" <= :dateFin
           AND s_priority."Matchcode" = :priorite
           AND (
                 LOWER(s_status."Matchcode") LIKE '%fermé%'
              OR LOWER(s_status."Matchcode") LIKE '%clôturé%'
              OR LOWER(s_status."Matchcode") LIKE '%clos%'
           )
-
 """ , nativeQuery = true)
     public Long  countTicketsClouresParIntervalleEtPriorite(
-            @Param("dateDebut") LocalDateTime Datedebut ,
-            @Param("dateFin") LocalDateTime DateFin ,
-            @Param("prirotite") String priorite
+            @Param("dateDebut") LocalDateTime dateDebut ,
+            @Param("dateFin") LocalDateTime dateFin ,
+            @Param("priorite") String priorite
 
     ) ;
 

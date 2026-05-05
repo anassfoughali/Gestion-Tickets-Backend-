@@ -96,14 +96,16 @@ public class TicketController {
             return ResponseEntity.status(500).build();
         }
     }
-    @GetMapping("/evolution/filtred")
+    @GetMapping("/evolution/filtered")
     @CrossOrigin
-    public ResponseEntity<TicketEvolutionFilteredDTO> getTicketEvolutionFiltrerd(
+    public ResponseEntity<TicketEvolutionFilteredDTO> getTicketEvolutionFiltered(
             @RequestParam("dateDebut") String dateDebutStr,
             @RequestParam("dateFin") String dateFinStr,
             @RequestParam("priorite") String priorite
     ) {
         try {
+            log.info("Requête reçue - dateDebut: {}, dateFin: {}, priorite: {}", dateDebutStr, dateFinStr, priorite);
+            
             LocalDate dateDebut = LocalDate.parse(dateDebutStr);
             LocalDate dateFin = LocalDate.parse(dateFinStr);
 
@@ -113,17 +115,20 @@ public class TicketController {
             }
 
             TicketEvolutionFilteredDTO result =
-                    ticketImpl.getTicketEvolutionFiltred(dateDebut, dateFin, priorite);
+                    ticketImpl.getTicketEvolutionFiltered(dateDebut, dateFin, priorite);
 
+            log.info("Réponse envoyée avec succès");
             return ResponseEntity.ok(result);
 
         } catch (DateTimeParseException e) {
-
             log.error("Erreur de format de date", e);
             return ResponseEntity.badRequest().build();
 
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            log.error("Paramètres invalides", e);
+            return ResponseEntity.badRequest().build();
 
+        } catch (Exception e) {
             log.error("Erreur lors de la récupération des tickets filtrés", e);
             return ResponseEntity.internalServerError().build();
         }
