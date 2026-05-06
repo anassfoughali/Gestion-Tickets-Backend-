@@ -1,8 +1,6 @@
 package com.finatech.ticket_service.service.impl;
-import com.finatech.ticket_service.dto.TempsResolutionMoyenDTO;
-import com.finatech.ticket_service.dto.TicketCompletDTO;
-import com.finatech.ticket_service.dto.TicketEvolutionParJourDTO;
-import com.finatech.ticket_service.dto.TopTechnicienDTO;
+import com.finatech.ticket_service.dto.*;
+import com.finatech.ticket_service.repository.ProductRepo;
 import com.finatech.ticket_service.repository.TicketRepo;
 import com.finatech.ticket_service.service.TicketInterfaceService;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import com.finatech.ticket_service.dto.TicketEvolutionFilteredDTO;
 import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
 import java.util.Map;
@@ -24,11 +21,19 @@ public class TicketImpl  implements TicketInterfaceService {
 
     final TicketRepo ticketRepo;
 
+    final ProductRepo productRepo ; 
+
+    // Injecter ProductRepo via le constructeur existant.
+    // Ajouter ProductRepo comme paramètre du constructeur (ex: ProductRepo productRepo)
+    // et assigner : this.productRepo = productRepo;
+    // Déclarer également le champ : final ProductRepo productRepo; juste après ticketRepo.
     //Dependency Injection by constructor
     public TicketImpl(
-            TicketRepo ticketRepo
+            TicketRepo ticketRepo , 
+            ProductRepo productRepo
     ){
-        this.ticketRepo=ticketRepo ;
+        this.ticketRepo=ticketRepo;
+        this.productRepo=productRepo;
     }
 
     @Override
@@ -220,7 +225,6 @@ public class TicketImpl  implements TicketInterfaceService {
                     existing.setTicketsArrivés(arrives);
                 }
             }
-            
             // Conversion en liste triée par date
             List<TicketEvolutionFilteredDTO.TicketEvolutionParJourDTO> evolutionParJour = 
                 evolutionMap.values().stream()
@@ -236,8 +240,26 @@ public class TicketImpl  implements TicketInterfaceService {
         }
     }
 
+    @Override
+    public List<ProductChangementDTO> getProduitsAvecNombreChangements() {
+        try {
+            List<Object[]> productChangementDTO = productRepo.getProduitsAvecNombreChangements();
+            return productChangementDTO.stream()
+               .map(row-> new ProductChangementDTO(
+                       ((Number) row[0]).intValue(),
+                       (String) row[1],
+                       (String) row[2],
+                        row[3] != null ? ((Number) row[3]).longValue():0L
+               ))
+               .collect(Collectors.toList());
+        }
+        catch (Exception e ){
+            log.error("Erreur getProduitsAvecNombreChangements" , e );
+            throw new RuntimeException("Erreur lors de réccupération des produits avec le nombre de changements");
+        }
     }
 
+}
 
 
 

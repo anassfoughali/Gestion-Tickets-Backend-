@@ -6,6 +6,7 @@ import com.finatech.ticket_service.dto.TopTechnicienDTO;
 import java.time.LocalDateTime;
 import java.util.List;
 import com.finatech.ticket_service.dto.TicketEvolutionFilteredDTO;
+import com.finatech.ticket_service.dto.ProductChangementDTO;
 import java.time.LocalDate;
 
 public interface TicketInterfaceService  {
@@ -16,5 +17,6 @@ public interface TicketInterfaceService  {
  List<TopTechnicienDTO> getTop5TechniciensByClotures();
  TicketEvolutionFilteredDTO getTicketEvolutionFiltered(LocalDate dateDebut, LocalDate dateFin, String priorite);
  List<TicketEvolutionFilteredDTO.TicketEvolutionParJourDTO> getTicketEvolutionFilteredSimple(LocalDate dateDebut, LocalDate dateFin, String priorite);
+ List<ProductChangementDTO>  getProduitsAvecNombreChangements() ;
 }
 
