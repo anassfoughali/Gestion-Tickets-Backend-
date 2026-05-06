@@ -6,14 +6,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import com.finatech.ticket_service.dto.TicketEvolutionFilteredDTO;
 import java.time.LocalDate;
- import java.time.format.DateTimeParseException;
- import lombok.extern.slf4j.Slf4j;
+
 
 @Slf4j
 @RestController
@@ -118,20 +115,28 @@ public class TicketController {
 
             log.info("Réponse envoyée avec succès");
             return ResponseEntity.ok(result);
-
         } catch (DateTimeParseException e) {
             log.error("Erreur de format de date", e);
             return ResponseEntity.badRequest().build();
-
         } catch (IllegalArgumentException e) {
             log.error("Paramètres invalides", e);
             return ResponseEntity.badRequest().build();
-
         } catch (Exception e) {
             log.error("Erreur lors de la récupération des tickets filtrés", e);
             return ResponseEntity.internalServerError().build();
         }
     }
+    @GetMapping("/produits/changements")
+    public ResponseEntity<List<ProductChangementDTO>> getProduitsAvecNombreChangements(){
+        try {
+            List<ProductChangementDTO> producttable = ticketImpl.getProduitsAvecNombreChangements() ;
+            return ResponseEntity.ok(producttable);
+        }      catch (Exception e ){
+            log.error("Erreur getProduitsAvecNombreChangements" , e );
+            return ResponseEntity.status(500).build() ;
+        }
+    }
+
 
 }
 
