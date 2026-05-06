@@ -11,10 +11,10 @@ public interface ProductRepo extends JpaRepository<Product,Long> {
 
 
 @Query(value = """
-SELECT p."ProductID", p."ProductName", COUNT(i."IssueID") AS nombreChangements
+SELECT p."ProductID", p."ProductName", p."BriefDescription", COUNT(i."IssueID") AS nombreChangements
 FROM "ZDEV_GP"."MARISupportProduct" p
 LEFT JOIN "ZDEV_GP"."MARISupportIssue" i ON p."ProductID" = i."ProductID"
-GROUP BY p."ProductID", p."ProductName"
+GROUP BY p."ProductID", p."ProductName", p."BriefDescription"
 ORDER BY nombreChangements DESC
      """ , nativeQuery=true)  
 public List<Object[]> getProduitsAvecNombreChangements();

@@ -243,19 +243,19 @@ public class TicketImpl  implements TicketInterfaceService {
     @Override
     public List<ProductChangementDTO> getProduitsAvecNombreChangements() {
         try {
-            List<Object[]> productChangementDTO = productRepo.getProduitsAvecNombreChangements();
-            return productChangementDTO.stream()
-               .map(row-> new ProductChangementDTO(
-                       ((Number) row[0]).intValue(),
-                       (String) row[1],
-                       (String) row[2],
-                        row[3] != null ? ((Number) row[3]).longValue():0L
+            List<Object[]> results = productRepo.getProduitsAvecNombreChangements();
+            return results.stream()
+               .map(row -> new ProductChangementDTO(
+                       ((Number) row[0]).intValue(),                          // row[0] → productId
+                       (String) row[1],                                        // row[1] → productName
+                       row[2] != null ? (String) row[2] : null,               // row[2] → briefDescription
+                       row[3] != null ? ((Number) row[3]).longValue() : 0L    // row[3] → nombreChangements
                ))
                .collect(Collectors.toList());
         }
-        catch (Exception e ){
-            log.error("Erreur getProduitsAvecNombreChangements" , e );
-            throw new RuntimeException("Erreur lors de réccupération des produits avec le nombre de changements");
+        catch (Exception e) {
+            log.error("Erreur getProduitsAvecNombreChangements", e);
+            throw new RuntimeException("Erreur lors de la récupération des produits avec le nombre de changements", e);
         }
     }
 
