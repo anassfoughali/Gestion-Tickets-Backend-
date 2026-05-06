@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 import com.finatech.ticket_service.dto.TicketEvolutionFilteredDTO;
 import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
+import java.util.Map;
+import java.util.HashMap;
 
 @Slf4j
 @Service
@@ -115,22 +117,121 @@ public class TicketImpl  implements TicketInterfaceService {
                     dateDebut, dateFin, priorite);
             LocalDateTime start = dateDebut.atStartOfDay();
             LocalDateTime end = dateFin.atTime(23, 59, 59);
+            // Récupération des totaux pour la période
             Long nombreTicketArrives =
                     ticketRepo.coutTicketsArrivesParIntervalleEtPriorite(start, end, priorite);
-            Long nombreTicketClotures =
-                    ticketRepo.countTicketsClouresParIntervalleEtPriorite(start, end, priorite);
+            // Récupération des données par jour (seulement les jours avec des données)
+            List<Object[]> ticketsArrivesParJour = ticketRepo.getTicketsArrivesParJourEtPriorite(start, end, priorite);
+            // Création d'une map pour faciliter la fusion des données
+            Map<String, TicketEvolutionFilteredDTO.TicketEvolutionParJourDTO> evolutionMap = new HashMap<>();
+            // Génération de tous les jours dans l'intervalle avec des valeurs par défaut à 0
+            LocalDate currentDate = dateDebut;
+            while (!currentDate.isAfter(dateFin)) {
+                String dateStr = currentDate.toString(); // Format YYYY-MM-DD
+                evolutionMap.put(dateStr, TicketEvolutionFilteredDTO.TicketEvolutionParJourDTO.builder()
+                        .date(dateStr)
+                        .ticketsArrivés(0L)
+                        .build());
+                currentDate = currentDate.plusDays(1);
+            }
+            // Traitement des tickets arrivés (mise à jour des valeurs existantes)
+            for (Object[] row : ticketsArrivesParJour) {
+                String date = (String) row[0];
+                Long arrives = row[1] != null ? ((Number) row[1]).longValue() : 0L;
+                
+                TicketEvolutionFilteredDTO.TicketEvolutionParJourDTO existing = evolutionMap.get(date);
+                if (existing != null) {
+                    existing.setTicketsArrivés(arrives);
+                }
+            }
+            // Conversion en liste triée par date
+            List<TicketEvolutionFilteredDTO.TicketEvolutionParJourDTO> evolutionParJour = 
+                evolutionMap.values().stream()
+                    .sorted((a, b) -> a.getDate().compareTo(b.getDate()))
+                    .collect(Collectors.toList());
+
             TicketEvolutionFilteredDTO dto = TicketEvolutionFilteredDTO.builder()
                     .nombreTicketsArrivés(nombreTicketArrives)
-                    .nombreTicketsClotures(nombreTicketClotures)
                     .date_debut(dateDebut)
                     .date_fin(dateFin)
                     .priorite(priorite)
+                    .evolutionParJour(evolutionParJour)
                     .build();
-            log.info("Résultat - Arrivés: {}, Clôturés: {}",
-                    nombreTicketArrives, nombreTicketClotures);
+            
+            log.info("Résultat - Arrivés: {}, Clôturés: {}, Jours: {}",
+                    nombreTicketArrives, evolutionParJour.size());
             return dto;
         } catch (Exception e) {
             log.error("Erreur lors de la récupération des tickets filtrés", e);
+            throw new RuntimeException("Erreur lors du traitement des tickets filtrés", e);
+        }
+    }
+
+    @Override
+    public List<TicketEvolutionFilteredDTO.TicketEvolutionParJourDTO> getTicketEvolutionFilteredSimple(
+            LocalDate dateDebut,
+            LocalDate dateFin,
+            String priorite) {
+
+        try {
+            if (dateDebut == null) {
+                log.error("dateDebut ne peut pas être null");
+                throw new IllegalArgumentException("dateDebut invalide");
+            }
+            if (dateFin == null) {
+                log.error("dateFin ne peut pas être null");
+                throw new IllegalArgumentException("dateFin invalide");
+            }
+            if (dateFin.isBefore(dateDebut)) {
+                log.error("dateFin doit être >= dateDebut");
+                throw new IllegalArgumentException("dateFin doit être >= dateDebut");
+            }
+            
+            log.info("Récupération des tickets filtrés (simple) - dateDebut: {}, dateFin: {}, priorite: {}",
+                    dateDebut, dateFin, priorite);
+            
+            LocalDateTime start = dateDebut.atStartOfDay();
+            LocalDateTime end = dateFin.atTime(23, 59, 59);
+            
+            // Récupération des données par jour (seulement les jours avec des données)
+            List<Object[]> ticketsArrivesParJour = ticketRepo.getTicketsArrivesParJourEtPriorite(start, end, priorite);
+            
+            // Création d'une map pour faciliter la fusion des données
+            Map<String, TicketEvolutionFilteredDTO.TicketEvolutionParJourDTO> evolutionMap = new HashMap<>();
+            
+            // Génération de tous les jours dans l'intervalle avec des valeurs par défaut à 0
+            LocalDate currentDate = dateDebut;
+            while (!currentDate.isAfter(dateFin)) {
+                String dateStr = currentDate.toString(); // Format YYYY-MM-DD
+                evolutionMap.put(dateStr, TicketEvolutionFilteredDTO.TicketEvolutionParJourDTO.builder()
+                        .date(dateStr)
+                        .ticketsArrivés(0L)
+                        .build());
+                currentDate = currentDate.plusDays(1);
+            }
+            
+            // Traitement des tickets arrivés (mise à jour des valeurs existantes)
+            for (Object[] row : ticketsArrivesParJour) {
+                String date = (String) row[0];
+                Long arrives = row[1] != null ? ((Number) row[1]).longValue() : 0L;
+                
+                TicketEvolutionFilteredDTO.TicketEvolutionParJourDTO existing = evolutionMap.get(date);
+                if (existing != null) {
+                    existing.setTicketsArrivés(arrives);
+                }
+            }
+            
+            // Conversion en liste triée par date
+            List<TicketEvolutionFilteredDTO.TicketEvolutionParJourDTO> evolutionParJour = 
+                evolutionMap.values().stream()
+                    .sorted((a, b) -> a.getDate().compareTo(b.getDate()))
+                    .collect(Collectors.toList());
+            
+            log.info("Résultat simple - Jours: {}", evolutionParJour.size());
+            return evolutionParJour;
+            
+        } catch (Exception e) {
+            log.error("Erreur lors de la récupération des tickets filtrés (simple)", e);
             throw new RuntimeException("Erreur lors du traitement des tickets filtrés", e);
         }
     }

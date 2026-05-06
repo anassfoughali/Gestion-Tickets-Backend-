@@ -2,8 +2,11 @@ import React from "react";
 import Topbar  from "../components/layout/Topbar";
 import HamburgerMenu from "../components/layout/HamburgerMenu";
 import useTickets from "../hooks/useTickets";
+import useFilteredTicketEvolution from "../hooks/useFilteredTicketEvolution";
 import KpiCard from "../components/cards/KpiCard";
 import TicketEvolutionChart from "../components/charts/TicketEvolutionChart";
+import SimpleTicketEvolutionChart from "../components/charts/SimpleTicketEvolutionChart";
+import DateRangePicker from "../components/common/DateRangePicker";
 import {
   statusBadge,
   priorityBadge,
@@ -78,9 +81,30 @@ const Tickets = () => {
   const [activeFilter, setActiveFilter] = React.useState("tous");
   const [activePriorityFilter, setActivePriorityFilter] = React.useState("tous");
   const [currentPage, setCurrentPage] = React.useState(1);
-  const [viewMode, setViewMode] = React.useState("table"); // "table" or "chart"
+  const [viewMode, setViewMode] = React.useState("table"); // "table", "chart", or "filtered"
+  const [dateDebut, setDateDebut] = React.useState("");
+  const [dateFin, setDateFin] = React.useState("");
+  
   const { tickets, evolutionData, loading, error, refresh } = useTickets();
+  const { filteredData, loading: filteredLoading, error: filteredError, fetchFilteredData } = useFilteredTicketEvolution();
   const chartRef = React.useRef(null);
+
+  // Initialize dates with default values (last 30 days)
+  React.useEffect(() => {
+    const today = new Date();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    
+    setDateFin(today.toISOString().split('T')[0]);
+    setDateDebut(thirtyDaysAgo.toISOString().split('T')[0]);
+  }, []);
+
+  // Fetch filtered data when dates or priority change
+  React.useEffect(() => {
+    if (dateDebut && dateFin && activePriorityFilter !== "tous") {
+      fetchFilteredData(dateDebut, dateFin, activePriorityFilter);
+    }
+  }, [dateDebut, dateFin, activePriorityFilter, fetchFilteredData]);
 
   const filteredByStatus = React.useMemo(() => {
     switch (activeFilter) {
@@ -313,6 +337,17 @@ const Tickets = () => {
                   <FiBarChart2 size={16} />
                   <span>Graphique</span>
                 </button>
+                <button
+                  onClick={() => setViewMode("filtered")}
+                  className={`flex items-center gap-2 px-4 py-2 text-xs font-medium rounded-md transition ${
+                    viewMode === "filtered"
+                      ? "bg-white text-gray-800 shadow-sm"
+                      : "text-gray-600 hover:text-gray-800"
+                  }`}
+                >
+                  <FiBarChart2 size={16} />
+                  <span>Filtré</span>
+                </button>
               </div>
 
               {/* Right: Priority filters + Export */}
@@ -341,7 +376,20 @@ const Tickets = () => {
               </div>
             </div>
 
-            {/* Content: Table or Chart */}
+            {/* Date Range Picker - Show only in filtered view */}
+            {viewMode === "filtered" && (
+              <div className="mb-4">
+                <DateRangePicker
+                  dateDebut={dateDebut}
+                  dateFin={dateFin}
+                  onDateDebutChange={setDateDebut}
+                  onDateFinChange={setDateFin}
+                  disabled={filteredLoading}
+                />
+              </div>
+            )}
+
+            {/* Content: Table, Chart, or Filtered Chart */}
             {viewMode === "table" ? (
               <>
                 {tickets.length === 0 ? (
@@ -442,10 +490,39 @@ const Tickets = () => {
                 </div>
                 )}
               </>
-            ) : (
-              /* Chart View */
+            ) : viewMode === "chart" ? (
+              /* Default Chart View */
               <div className="py-4">
                 <TicketEvolutionChart data={chartEvolutionData} chartRef={chartRef} />
+              </div>
+            ) : (
+              /* Filtered Chart View */
+              <div className="py-4">
+                {activePriorityFilter === "tous" ? (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500 mb-2">
+                      Veuillez sélectionner une priorité spécifique pour voir l'évolution filtrée
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      Utilisez les filtres de priorité ci-dessus (Critique, Majeur, Mineur)
+                    </p>
+                  </div>
+                ) : (
+                  <SimpleTicketEvolutionChart
+                    data={filteredData}
+                    dateDebut={dateDebut}
+                    dateFin={dateFin}
+                    priorite={activePriorityFilter}
+                    loading={filteredLoading}
+                  />
+                )}
+                {filteredError && (
+                  <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-sm text-red-600">
+                      ❌ Erreur: {filteredError}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>

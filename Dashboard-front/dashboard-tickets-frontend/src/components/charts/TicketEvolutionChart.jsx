@@ -14,10 +14,10 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import './PremiumChart.css';
 
-// Premium color palette - Bleu ciel et Vert
+// Premium color palette - Green for total tickets, Red for closed tickets
 const COLORS = {
-  primary: '#06B6D4',      // Bleu ciel (Cyan)
-  secondary: '#10B981',    // Vert (Green)
+  primary: '#10B981',      // Green for total tickets (arrived)
+  secondary: '#EF4444',    // Red for closed tickets
   text: {
     primary: '#1F2937',
     secondary: '#6B7280',
@@ -161,7 +161,7 @@ const TicketEvolutionChart = ({ data = [], chartRef }) => {
             data={data} 
             margin={{ top: 20, right: 30, bottom: 20, left: 20 }}
           >
-            {/* Gradient Definitions - Bleu ciel pour Total, Vert pour Clôturés */}
+            {/* Gradient Definitions - Green for Total, Red for Closed */}
             <defs>
               <linearGradient id="colorTickets" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor={COLORS.primary} stopOpacity={0.8} />
@@ -208,7 +208,7 @@ const TicketEvolutionChart = ({ data = [], chartRef }) => {
               wrapperStyle={{ paddingTop: '20px' }}
             />
 
-            {/* Areas - Ordre inversé: Clôturés en premier (Vert), puis Total (Bleu ciel) */}
+            {/* Areas - Order: Closed first (Red), then Total (Green) */}
             <Area
               type="monotone"
               dataKey="closedTickets"

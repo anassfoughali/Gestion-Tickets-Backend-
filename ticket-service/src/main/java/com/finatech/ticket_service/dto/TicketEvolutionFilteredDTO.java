@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -17,4 +18,14 @@ public class TicketEvolutionFilteredDTO {
     private LocalDate date_debut;
     private LocalDate date_fin;
     private String priorite;
+    private List<TicketEvolutionParJourDTO> evolutionParJour;
+    
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class TicketEvolutionParJourDTO {
+        private String date;
+        private Long ticketsArrivés;
+    }
 }

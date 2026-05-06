@@ -102,13 +102,13 @@ export const ticketsService = {
     ...res,
     data: Array.isArray(res.data) ? res.data.map(normalizeTicket) : [],
   })),
-  getTotal:             () => api.get('/tickets/total'),           // → Long
-  getOuverts:           () => api.get('/tickets/ouverts'),         // → TicketsOuvertsDTO
-  getEnCours:           () => api.get('/tickets/en-cours'),        // → TicketsEnCoursDTO
-  getResolus:           () => api.get('/tickets/resolus'),         // → TicketsResolusDTO
-  getClotures:          () => api.get('/tickets/clotures'),        // → TicketsClouresDTO
-  getTempsResolution:   () => api.get('/tickets/temps-resolution'),// → List<TempsResolutionDTO>
-  getResolutionMoyenne: () => api.get('/tickets/resolution'),      // → TempsResolutionMoyenDTO
+  getTotal:             () => api.get('/tickets/total'),           
+  getOuverts:           () => api.get('/tickets/ouverts'),         
+  getEnCours:           () => api.get('/tickets/en-cours'),        
+  getResolus:           () => api.get('/tickets/resolus'),         
+  getClotures:          () => api.get('/tickets/clotures'),        
+  getTempsResolution:   () => api.get('/tickets/temps-resolution'),
+  getResolutionMoyenne: () => api.get('/tickets/resolution'),     
   getStatsParJour:      () => api.get('/tickets/stats-par-jour').then((res) => {
     if (process.env.NODE_ENV === 'development' && Array.isArray(res.data) && res.data.length > 0) {
       console.log('[API] stats-par-jour raw sample:', JSON.stringify(res.data[0]));
@@ -119,6 +119,15 @@ export const ticketsService = {
     };
   }),
   getTopTechniciens:    () => api.get('/tickets/top-techniciens'), // → List<TopTechnicienDTO>
+  // New filtered evolution API - returns only evolutionParJour array
+  getEvolutionFiltered: (dateDebut, dateFin, priorite) => {
+    const params = new URLSearchParams({
+      dateDebut: dateDebut,
+      dateFin: dateFin,
+      priorite: priorite
+    });
+    return api.get(`/tickets/evolution/filtered?${params.toString()}`);
+  },
 };
 
 export const technicienService = {

@@ -97,8 +97,7 @@ public class TicketController {
         }
     }
     @GetMapping("/evolution/filtered")
-    @CrossOrigin
-    public ResponseEntity<TicketEvolutionFilteredDTO> getTicketEvolutionFiltered(
+    public ResponseEntity<List<TicketEvolutionFilteredDTO.TicketEvolutionParJourDTO>> getTicketEvolutionFiltered(
             @RequestParam("dateDebut") String dateDebutStr,
             @RequestParam("dateFin") String dateFinStr,
             @RequestParam("priorite") String priorite
@@ -114,8 +113,8 @@ public class TicketController {
                 return ResponseEntity.badRequest().build();
             }
 
-            TicketEvolutionFilteredDTO result =
-                    ticketImpl.getTicketEvolutionFiltered(dateDebut, dateFin, priorite);
+            List<TicketEvolutionFilteredDTO.TicketEvolutionParJourDTO> result =
+                    ticketImpl.getTicketEvolutionFilteredSimple(dateDebut, dateFin, priorite);
 
             log.info("Réponse envoyée avec succès");
             return ResponseEntity.ok(result);

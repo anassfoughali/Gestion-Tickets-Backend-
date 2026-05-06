@@ -275,4 +275,27 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
 
     ) ;
 
+    // Requête simplifiée pour récupérer les tickets arrivés par jour dans un intervalle avec priorité
+    @Query(value = """
+        SELECT 
+            TO_VARCHAR(TO_DATE(SUBSTRING(i."USER_DateReceptionEmail", 1, 10), 'DD/MM/YYYY'), 'YYYY-MM-DD') as date,
+            COUNT(*) as nb_arrives
+        FROM "ZDEV_GP"."MARISupportIssue" i
+        JOIN "ZDEV_GP"."MARISupportSettings" s
+            ON s."ID" = i."Priority"
+            AND s."Setting" = 3
+        WHERE i."USER_DateReceptionEmail" IS NOT NULL
+          AND TO_DATE(SUBSTRING(i."USER_DateReceptionEmail", 1, 10), 'DD/MM/YYYY') >= :dateDebut
+          AND TO_DATE(SUBSTRING(i."USER_DateReceptionEmail", 1, 10), 'DD/MM/YYYY') <= :dateFin
+          AND s."Matchcode" = :priorite
+        GROUP BY TO_VARCHAR(TO_DATE(SUBSTRING(i."USER_DateReceptionEmail", 1, 10), 'DD/MM/YYYY'), 'YYYY-MM-DD')
+        ORDER BY TO_VARCHAR(TO_DATE(SUBSTRING(i."USER_DateReceptionEmail", 1, 10), 'DD/MM/YYYY'), 'YYYY-MM-DD')
+        """, nativeQuery = true)
+    List<Object[]> getTicketsArrivesParJourEtPriorite(
+            @Param("dateDebut") LocalDateTime dateDebut,
+            @Param("dateFin") LocalDateTime dateFin,
+            @Param("priorite") String priorite
+    );
+
+
 }

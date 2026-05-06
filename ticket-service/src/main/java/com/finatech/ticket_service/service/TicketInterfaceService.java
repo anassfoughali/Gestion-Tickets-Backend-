@@ -15,5 +15,6 @@ public interface TicketInterfaceService  {
  List<TicketCompletDTO> getTicketDetails();
  List<TopTechnicienDTO> getTop5TechniciensByClotures();
  TicketEvolutionFilteredDTO getTicketEvolutionFiltered(LocalDate dateDebut, LocalDate dateFin, String priorite);
+ List<TicketEvolutionFilteredDTO.TicketEvolutionParJourDTO> getTicketEvolutionFilteredSimple(LocalDate dateDebut, LocalDate dateFin, String priorite);
 }
 
