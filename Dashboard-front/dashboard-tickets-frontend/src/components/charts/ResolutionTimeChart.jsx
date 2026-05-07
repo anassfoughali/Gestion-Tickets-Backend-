@@ -41,6 +41,7 @@ const ResolutionTimeChart = ({ data }) => {
     .sort((a, b) => b.value - a.value)
     .slice(0, 5);
 
+
   return (
     <div className="premium-chart-card">
       <div className="header-content">
