@@ -10,8 +10,6 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import com.finatech.ticket_service.dto.TicketEvolutionFilteredDTO;
 import java.time.LocalDate;
-
-
 @Slf4j
 @RestController
 @RequestMapping("/api/tickets")
@@ -137,6 +135,28 @@ public class TicketController {
         }
     }
 
+    @GetMapping("/produits/clients")
+    public ResponseEntity<List<ProductClientDTO>> getIssuesWithProductAndClient(){
+        try {
+            List<ProductClientDTO> produit_client  = ticketImpl.getIssuesWithProductAndClient();
+            return ResponseEntity.ok(produit_client);
+        }catch(Exception e ){
+            log.error("Erreur de getIssuesWithProductAndClient " , e );
+            return ResponseEntity.status(500).build();
+        }
+
+    }
+    // top3-zero-changement
+    @GetMapping("/produits/top3-zero-changement")
+    public ResponseEntity<List<ProductChangementDTO>> getTop3Produitwithzerochangement(){
+        try {
+            List<ProductChangementDTO> produitlist = ticketImpl.getTop3ProduitsZeroChangement();
+            return ResponseEntity.ok(produitlist);
+        }catch (Exception e ){
+            log.error("Erreur de getTop3Produitwithzerochangement");
+            return ResponseEntity.status(500).build() ;
+        }
+    }
 
 }
 

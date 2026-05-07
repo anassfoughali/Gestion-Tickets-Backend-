@@ -4,14 +4,11 @@ import com.finatech.ticket_service.repository.ProductRepo;
 import com.finatech.ticket_service.repository.TicketRepo;
 import com.finatech.ticket_service.service.TicketInterfaceService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
-
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.time.LocalDate;
-import lombok.extern.slf4j.Slf4j;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -23,11 +20,6 @@ public class TicketImpl  implements TicketInterfaceService {
 
     final ProductRepo productRepo ; 
 
-    // Injecter ProductRepo via le constructeur existant.
-    // Ajouter ProductRepo comme paramètre du constructeur (ex: ProductRepo productRepo)
-    // et assigner : this.productRepo = productRepo;
-    // Déclarer également le champ : final ProductRepo productRepo; juste après ticketRepo.
-    //Dependency Injection by constructor
     public TicketImpl(
             TicketRepo ticketRepo , 
             ProductRepo productRepo
@@ -258,6 +250,45 @@ public class TicketImpl  implements TicketInterfaceService {
             throw new RuntimeException("Erreur lors de la récupération des produits avec le nombre de changements", e);
         }
     }
+
+    @Override
+    public List<ProductClientDTO> getIssuesWithProductAndClient() {
+        try {
+            List<Object[]> ProduitClient = productRepo.getIssuesWithProductAndClient();
+            return ProduitClient.stream()
+                    .map(r -> new ProductClientDTO(
+                            ((Number) r[0]).intValue(), // r[0] ->  IssueId
+                            ((Number) r[1]).intValue(), // r[1] -> ProductId
+                            (String) r[2],              // r[2] -> ProductName
+                            r[3] != null ? (String) r[3] : null,      // r[3] -> BriefDescription
+                            (String) r[4]               //  r[4] -> Client
+                    ))
+                    .toList();
+        }catch (Exception e ) {
+            log.error("Erreur getIssuesWithProductAndClient  " , e );
+            throw  new RuntimeException("Erreur lors de la récupération des produits avec le client associé ");
+        }
+
+    }
+
+    @Override
+    public List<ProductChangementDTO> getTop3ProduitsZeroChangement() {
+        try{
+            List<Object[]> produitList = productRepo.getTop3ProduitsZeroChangement();
+            return produitList.stream()
+                    .map(p-> new ProductChangementDTO(
+                            ((Number)p[0]).intValue(),
+                            (String) p[1],
+                            p[2] != null ? (String) p[2] : null,
+                            p[3] != null ? ((Number) p[3]).longValue() : 0L
+                            )).collect(Collectors.toList());
+        } catch (Exception e ){
+            log.error("Erreur getTop3ProduitsZeroChangement" , e );
+            throw new RuntimeException("Erreur lors de la récupération de Top 3 produit avec 0 nombre de changement  ");
+        }
+
+    }
+
 
 }
 

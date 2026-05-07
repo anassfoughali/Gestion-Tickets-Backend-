@@ -1,12 +1,8 @@
 package com.finatech.ticket_service.service;
-import com.finatech.ticket_service.dto.TempsResolutionMoyenDTO;
-import com.finatech.ticket_service.dto.TicketCompletDTO;
-import com.finatech.ticket_service.dto.TicketEvolutionParJourDTO;
-import com.finatech.ticket_service.dto.TopTechnicienDTO;
+import com.finatech.ticket_service.dto.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
-import com.finatech.ticket_service.dto.TicketEvolutionFilteredDTO;
-import com.finatech.ticket_service.dto.ProductChangementDTO;
 import java.time.LocalDate;
 
 public interface TicketInterfaceService  {
@@ -18,5 +14,8 @@ public interface TicketInterfaceService  {
  TicketEvolutionFilteredDTO getTicketEvolutionFiltered(LocalDate dateDebut, LocalDate dateFin, String priorite);
  List<TicketEvolutionFilteredDTO.TicketEvolutionParJourDTO> getTicketEvolutionFilteredSimple(LocalDate dateDebut, LocalDate dateFin, String priorite);
  List<ProductChangementDTO>  getProduitsAvecNombreChangements() ;
+ List<ProductClientDTO> getIssuesWithProductAndClient() ;
+ List<ProductChangementDTO>  getTop3ProduitsZeroChangement();
+
 }
 
