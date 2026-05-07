@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Sector } from 'recharts';
+import './PremiumChart.css';
 
-//  Palette Finatech
-const COLORS = ['#0B1F3A', '#C9A84C', '#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
+// Premium Palette
+const COLORS = ['#6366F1', '#8B5CF6', '#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#C9A84C'];
 
 const renderActiveShape = (props) => {
   const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, payload, value } = props;
@@ -26,8 +27,8 @@ const ResolutionTimeChart = ({ data }) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   if (!data || data.length === 0) return (
-    <div className="flex items-center justify-center h-64 p-5 bg-white border border-gray-100 shadow-sm rounded-xl">
-      <p className="text-sm text-gray-400">Aucune donnée disponible</p>
+    <div className="premium-chart-card empty-state" style={{ minHeight: '320px' }}>
+      <p className="empty-text">Aucune donnée disponible</p>
     </div>
   );
 
@@ -40,31 +41,52 @@ const ResolutionTimeChart = ({ data }) => {
     .sort((a, b) => b.value - a.value)
     .slice(0, 5);
 
+
   return (
-    <div className="p-5 bg-white border border-gray-100 shadow-sm rounded-xl">
-      <h3 className="mb-1 text-sm font-semibold text-gray-700">Temps Moyen Résolution</h3>
-      <p className="mb-1 text-xs text-gray-400">Top 5 techniciens (heures)</p>
-      <ResponsiveContainer width="100%" height={220}>
-        <PieChart>
-          <Pie activeIndex={activeIndex} activeShape={renderActiveShape}
-            data={chartData} cx="50%" cy="50%"
-            innerRadius={55} outerRadius={80} dataKey="value"
-            onMouseEnter={(_, index) => setActiveIndex(index)}>
-            {chartData.map((_, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
-        </PieChart>
-      </ResponsiveContainer>
-      <div className="flex flex-wrap justify-center mt-2 gap-x-3 gap-y-1">
-        {chartData.map((entry, index) => (
-          <div key={index} className="flex items-center gap-1 cursor-pointer"
-            onMouseEnter={() => setActiveIndex(index)}>
-            <span className="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0"
-              style={{ backgroundColor: COLORS[index % COLORS.length] }} />
-            <span className="text-xs text-gray-500 truncate max-w-[80px]">{entry.name}</span>
-          </div>
-        ))}
+    <div className="premium-chart-card">
+      <div className="header-content">
+        <h3 className="chart-title">Temps Moyen Résolution</h3>
+        <p className="chart-subtitle">Top 5 techniciens (heures)</p>
+      </div>
+      <div className="chart-container">
+        <ResponsiveContainer width="100%" height={240}>
+          <PieChart>
+            <Pie 
+              activeIndex={activeIndex} 
+              activeShape={renderActiveShape}
+              data={chartData} 
+              cx="50%" 
+              cy="50%"
+              innerRadius={60} 
+              outerRadius={85} 
+              dataKey="value"
+              onMouseEnter={(_, index) => setActiveIndex(index)}
+              animationDuration={1500}
+              animationEasing="ease-out"
+            >
+              {chartData.map((_, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
+        <div className="flex flex-wrap justify-center mt-3 gap-x-4 gap-y-2">
+          {chartData.map((entry, index) => (
+            <div 
+              key={index} 
+              className="flex items-center gap-2 cursor-pointer transition-opacity hover:opacity-70"
+              onMouseEnter={() => setActiveIndex(index)}
+            >
+              <span 
+                className="inline-block w-3 h-3 rounded-full flex-shrink-0"
+                style={{ backgroundColor: COLORS[index % COLORS.length] }} 
+              />
+              <span className="text-xs font-medium text-gray-600 truncate max-w-[90px]">
+                {entry.name}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

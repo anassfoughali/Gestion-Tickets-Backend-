@@ -1,9 +1,12 @@
 import React from "react";
-import Sidebar from "../components/layout/Sidebar";
 import Topbar  from "../components/layout/Topbar";
+import HamburgerMenu from "../components/layout/HamburgerMenu";
 import useTickets from "../hooks/useTickets";
+import useFilteredTicketEvolution from "../hooks/useFilteredTicketEvolution";
 import KpiCard from "../components/cards/KpiCard";
 import TicketEvolutionChart from "../components/charts/TicketEvolutionChart";
+import SimpleTicketEvolutionChart from "../components/charts/SimpleTicketEvolutionChart";
+import DateRangePicker from "../components/common/DateRangePicker";
 import {
   statusBadge,
   priorityBadge,
@@ -16,7 +19,7 @@ import {
 } from "../utils/statusHelpers";
 import {
   FiRefreshCw, FiDownload, FiList, FiCheckCircle, FiClock,
-  FiAlertCircle, FiTrendingUp, FiChevronLeft, FiChevronRight
+  FiAlertCircle, FiTrendingUp, FiChevronLeft, FiChevronRight, FiBarChart2, FiTable
 } from "react-icons/fi";
 
 const BLUE = "#2784c1";
@@ -78,8 +81,30 @@ const Tickets = () => {
   const [activeFilter, setActiveFilter] = React.useState("tous");
   const [activePriorityFilter, setActivePriorityFilter] = React.useState("tous");
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [viewMode, setViewMode] = React.useState("table"); // "table", "chart", or "filtered"
+  const [dateDebut, setDateDebut] = React.useState("");
+  const [dateFin, setDateFin] = React.useState("");
+  
   const { tickets, evolutionData, loading, error, refresh } = useTickets();
+  const { filteredData, loading: filteredLoading, error: filteredError, fetchFilteredData } = useFilteredTicketEvolution();
   const chartRef = React.useRef(null);
+
+  // Initialize dates with default values (last 30 days)
+  React.useEffect(() => {
+    const today = new Date();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    
+    setDateFin(today.toISOString().split('T')[0]);
+    setDateDebut(thirtyDaysAgo.toISOString().split('T')[0]);
+  }, []);
+
+  // Fetch filtered data when dates or priority change
+  React.useEffect(() => {
+    if (dateDebut && dateFin && activePriorityFilter !== "tous") {
+      fetchFilteredData(dateDebut, dateFin, activePriorityFilter);
+    }
+  }, [dateDebut, dateFin, activePriorityFilter, fetchFilteredData]);
 
   const filteredByStatus = React.useMemo(() => {
     switch (activeFilter) {
@@ -237,10 +262,10 @@ const Tickets = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
-      <div className="flex flex-col flex-1 overflow-hidden">
+      <HamburgerMenu />
+      <div className="flex flex-col flex-1 w-full">
         <Topbar />
-        <main className="flex-1 p-6 space-y-6 overflow-y-auto">
+        <main className="flex-1 p-6 space-y-6 overflow-y-auto" style={{ paddingLeft: '80px' }}>
 
           {/* Header */}
           <div className="flex items-center justify-between">
@@ -267,10 +292,11 @@ const Tickets = () => {
             <KpiCard title="Taux Clôture"  value={closureRate}     subtitle="Sur sélection"       icon={<FiTrendingUp />}  color="blue"   />
           </div>
 
-          {/* Table */}
+          {/* Table/Chart Container with Toggle */}
           <div className="p-5 bg-white border border-gray-100 shadow-sm rounded-xl">
+            {/* Header with View Toggle */}
             <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-              {/* Filter pills */}
+              {/* Left: Filter pills */}
               <div className="flex flex-wrap gap-2">
                 {FILTERS.map((f) => (
                   <button
@@ -286,6 +312,45 @@ const Tickets = () => {
                   </button>
                 ))}
               </div>
+
+              {/* Center: View Mode Toggle */}
+              <div className="flex items-center gap-2 p-1 bg-gray-100 rounded-lg">
+                <button
+                  onClick={() => setViewMode("table")}
+                  className={`flex items-center gap-2 px-4 py-2 text-xs font-medium rounded-md transition ${
+                    viewMode === "table"
+                      ? "bg-white text-gray-800 shadow-sm"
+                      : "text-gray-600 hover:text-gray-800"
+                  }`}
+                >
+                  <FiTable size={16} />
+                  <span>Tableau</span>
+                </button>
+                <button
+                  onClick={() => setViewMode("chart")}
+                  className={`flex items-center gap-2 px-4 py-2 text-xs font-medium rounded-md transition ${
+                    viewMode === "chart"
+                      ? "bg-white text-gray-800 shadow-sm"
+                      : "text-gray-600 hover:text-gray-800"
+                  }`}
+                >
+                  <FiBarChart2 size={16} />
+                  <span>Graphique</span>
+                </button>
+                <button
+                  onClick={() => setViewMode("filtered")}
+                  className={`flex items-center gap-2 px-4 py-2 text-xs font-medium rounded-md transition ${
+                    viewMode === "filtered"
+                      ? "bg-white text-gray-800 shadow-sm"
+                      : "text-gray-600 hover:text-gray-800"
+                  }`}
+                >
+                  <FiBarChart2 size={16} />
+                  <span>Filtré</span>
+                </button>
+              </div>
+
+              {/* Right: Priority filters + Export */}
               <div className="flex flex-wrap gap-2">
                 {PRIORITY_FILTERS.map((f) => (
                   <button
@@ -300,106 +365,167 @@ const Tickets = () => {
                     {f.label}
                   </button>
                 ))}
+                <button
+                  onClick={handleExportExcel}
+                  className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-white rounded-lg shadow-sm transition"
+                  style={{ backgroundColor: "#0B1F3A" }}
+                >
+                  <FiDownload size={14} />
+                  Export Excel
+                </button>
               </div>
-              {/* Export button */}
-              <button
-                onClick={handleExportExcel}
-                className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-white rounded-lg shadow-sm transition"
-                style={{ backgroundColor: "#0B1F3A" }}
-              >
-                <FiDownload size={14} />
-                Export Excel
-              </button>
             </div>
 
-            {tickets.length === 0 ? (
-              <p className="py-12 text-sm text-center text-gray-400">Aucun ticket disponible</p>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="text-xs text-gray-400 uppercase border-b">
-                      <th className="pb-3 font-medium text-left">N° Ticket</th>
-                      <th className="pb-3 font-medium text-left">Objet</th>
-                      <th className="pb-3 font-medium text-left">Client</th>
-                      <th className="pb-3 font-medium text-left">Technicien</th>
-                      <th className="pb-3 font-medium text-left">Type</th>
-                      <th className="pb-3 font-medium text-left">Priorité</th>
-                      <th className="pb-3 font-medium text-left">Statut</th>
-                      <th className="pb-3 font-medium text-left">Date Création</th>
-                      <th className="pb-3 font-medium text-left">Date Clôture</th>
-                      <th className="pb-3 font-medium text-left">Durée (h)</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-50">
-                    {paginatedTickets.map((t, idx) => (
-                      <tr key={t.issueID || idx} className="transition hover:bg-gray-50">
-                        <td className="py-3 font-mono text-xs font-semibold" style={{ color: BLUE }}>
-                          {toStr(t.issueID)}
-                        </td>
-                        <td className="max-w-xs py-3 text-gray-700 truncate">{toStr(t.briefDescription)}</td>
-                        <td className="py-3 text-xs text-gray-500">{toStr(t.client)}</td>
-                        <td className="py-3 text-xs text-gray-500">{toStr(t.technicien)}</td>
-                        <td className="py-3 text-xs text-gray-500">{toStr(t.issueType)}</td>
-                        <td className="py-3">
-                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${priorityBadge(t.priority)}`}>
-                            {priorityLabel(t.priority)}
-                          </span>
-                        </td>
-                        <td className="py-3">
-                          <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusBadge(t.status)}`}>
-                            {toStr(t.status)}
-                          </span>
-                        </td>
-                        <td className="py-3 text-xs text-gray-400">{toStr(t.requestDate)}</td>
-                        <td className="py-3 text-xs text-gray-400">{toStr(t.closeDate)}</td>
-                        <td className="py-3 text-xs text-gray-400">{toStr(t.resolutionDuration)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+            {/* Date Range Picker - Show only in filtered view */}
+            {viewMode === "filtered" && (
+              <div className="mb-4">
+                <DateRangePicker
+                  dateDebut={dateDebut}
+                  dateFin={dateFin}
+                  onDateDebutChange={setDateDebut}
+                  onDateFinChange={setDateFin}
+                  disabled={filteredLoading}
+                />
               </div>
             )}
 
-            {/* Pagination */}
-            <div className="flex items-center justify-between pt-4 mt-4 border-t border-gray-100">
-              <p className="text-xs text-gray-500">
-                Affichage {filteredTickets.length === 0 ? 0 : (currentPage - 1) * ROWS_PER_PAGE + 1}–
-                {Math.min(currentPage * ROWS_PER_PAGE, filteredTickets.length)} sur {filteredTickets.length}
-              </p>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                  className="p-1.5 text-gray-500 bg-white border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
-                >
-                  <FiChevronLeft size={14} />
-                </button>
-                {getPageNumbers().map((n) => (
-                  <button
-                    key={n}
-                    onClick={() => setCurrentPage(n)}
-                    className={`w-7 h-7 text-xs font-medium rounded-lg transition ${
-                      n === currentPage
-                        ? "bg-indigo-600 text-white"
-                        : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
-                    }`}
-                  >
-                    {n}
-                  </button>
-                ))}
-                <button
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
-                  className="p-1.5 text-gray-500 bg-white border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
-                >
-                  <FiChevronRight size={14} />
-                </button>
-              </div>
-            </div>
-          </div>
+            {/* Content: Table, Chart, or Filtered Chart */}
+            {viewMode === "table" ? (
+              <>
+                {tickets.length === 0 ? (
+                  <p className="py-12 text-sm text-center text-gray-400">Aucun ticket disponible</p>
+                ) : filteredTickets.length === 0 ? (
+                  <p className="py-12 text-sm text-center text-gray-400">
+                    {activeFilter === "resolu" && activePriorityFilter !== "tous"
+                      ? `Aucun ticket résolu avec priorité ${PRIORITY_FILTERS.find(f => f.key === activePriorityFilter)?.label.toLowerCase()}`
+                      : activeFilter === "resolu"
+                      ? "Aucun ticket résolu"
+                      : activePriorityFilter !== "tous"
+                      ? `Aucun ticket avec priorité ${PRIORITY_FILTERS.find(f => f.key === activePriorityFilter)?.label.toLowerCase()}`
+                      : "Aucun ticket trouvé pour ce filtre"}
+                  </p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-xs text-gray-400 uppercase border-b">
+                          <th className="pb-3 font-medium text-left">N° Ticket</th>
+                          <th className="pb-3 font-medium text-left">Objet</th>
+                          <th className="pb-3 font-medium text-left">Client</th>
+                          <th className="pb-3 font-medium text-left">Technicien</th>
+                          <th className="pb-3 font-medium text-left">Type</th>
+                          <th className="pb-3 font-medium text-left">Priorité</th>
+                          <th className="pb-3 font-medium text-left">Statut</th>
+                          <th className="pb-3 font-medium text-left">Date Création</th>
+                          <th className="pb-3 font-medium text-left">Date Clôture</th>
+                          <th className="pb-3 font-medium text-left">Durée (h)</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-50">
+                        {paginatedTickets.map((t, idx) => (
+                          <tr key={t.issueID || idx} className="transition hover:bg-gray-50">
+                            <td className="py-3 font-mono text-xs font-semibold" style={{ color: BLUE }}>
+                              {toStr(t.issueID)}
+                            </td>
+                            <td className="max-w-xs py-3 text-gray-700 truncate">{toStr(t.briefDescription)}</td>
+                            <td className="py-3 text-xs text-gray-500">{toStr(t.client)}</td>
+                            <td className="py-3 text-xs text-gray-500">{toStr(t.technicien)}</td>
+                            <td className="py-3 text-xs text-gray-500">{toStr(t.issueType)}</td>
+                            <td className="py-3">
+                              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${priorityBadge(t.priority)}`}>
+                                {priorityLabel(t.priority)}
+                              </span>
+                            </td>
+                            <td className="py-3">
+                              <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusBadge(t.status)}`}>
+                                {toStr(t.status)}
+                              </span>
+                            </td>
+                            <td className="py-3 text-xs text-gray-400">{toStr(t.requestDate)}</td>
+                            <td className="py-3 text-xs text-gray-400">{toStr(t.closeDate)}</td>
+                            <td className="py-3 text-xs text-gray-400">{toStr(t.resolutionDuration)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
 
-          <TicketEvolutionChart data={chartEvolutionData} chartRef={chartRef} />
+                {/* Pagination */}
+                {filteredTickets.length > 0 && (
+                  <div className="flex items-center justify-between pt-4 mt-4 border-t border-gray-100">
+                  <p className="text-xs text-gray-500">
+                    Affichage {filteredTickets.length === 0 ? 0 : (currentPage - 1) * ROWS_PER_PAGE + 1}–
+                    {Math.min(currentPage * ROWS_PER_PAGE, filteredTickets.length)} sur {filteredTickets.length}
+                  </p>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="p-1.5 text-gray-500 bg-white border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
+                    >
+                      <FiChevronLeft size={14} />
+                    </button>
+                    {getPageNumbers().map((n) => (
+                      <button
+                        key={n}
+                        onClick={() => setCurrentPage(n)}
+                        className={`w-7 h-7 text-xs font-medium rounded-lg transition ${
+                          n === currentPage
+                            ? "bg-indigo-600 text-white"
+                            : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                        }`}
+                      >
+                        {n}
+                      </button>
+                    ))}
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                      className="p-1.5 text-gray-500 bg-white border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
+                    >
+                      <FiChevronRight size={14} />
+                    </button>
+                  </div>
+                </div>
+                )}
+              </>
+            ) : viewMode === "chart" ? (
+              /* Default Chart View */
+              <div className="py-4">
+                <TicketEvolutionChart data={chartEvolutionData} chartRef={chartRef} />
+              </div>
+            ) : (
+              /* Filtered Chart View */
+              <div className="py-4">
+                {activePriorityFilter === "tous" ? (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500 mb-2">
+                      Veuillez sélectionner une priorité spécifique pour voir l'évolution filtrée
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      Utilisez les filtres de priorité ci-dessus (Critique, Majeur, Mineur)
+                    </p>
+                  </div>
+                ) : (
+                  <SimpleTicketEvolutionChart
+                    data={filteredData}
+                    dateDebut={dateDebut}
+                    dateFin={dateFin}
+                    priorite={activePriorityFilter}
+                    loading={filteredLoading}
+                  />
+                )}
+                {filteredError && (
+                  <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-sm text-red-600">
+                      ❌ Erreur: {filteredError}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
         </main>
       </div>

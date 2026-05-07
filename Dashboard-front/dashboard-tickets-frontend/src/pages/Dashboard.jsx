@@ -1,15 +1,15 @@
 import React from "react";
-import Sidebar from "../components/layout/Sidebar";
 import Topbar  from "../components/layout/Topbar";
+import HamburgerMenu from "../components/layout/HamburgerMenu";
 import KpiCard from "../components/cards/KpiCard";
 import TicketsPerDayChart  from "../components/charts/TicketsPerDayChart";
-import TechnicianPerformanceChart from "../components/charts/TechnicianPerformanceChart";
+import TechnicianPodiumChart from "../components/charts/TechnicianPodiumChart";
 import ResolutionTimeChart  from "../components/charts/ResolutionTimeChart";
 import useDashboard from "../hooks/useDashboard";
 import {
   FiList, FiCheckCircle, FiClock,
   FiAlertCircle, FiTrendingUp, FiRefreshCw,
-  FiLock, FiShield
+  FiLock
 } from "react-icons/fi";
 import { statusBadge, priorityBadge, priorityLabel } from "../utils/statusHelpers";
 
@@ -52,10 +52,10 @@ const Dashboard = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
-      <div className="flex flex-col flex-1 overflow-hidden">
+      <HamburgerMenu />
+      <div className="flex flex-col flex-1 w-full">
         <Topbar />
-        <main className="flex-1 p-6 space-y-6 overflow-y-auto">
+        <main className="flex-1 p-6 space-y-5 overflow-y-auto" style={{ paddingLeft: '80px' }}>
 
           {/* Header */}
           <div className="flex items-center justify-between">
@@ -72,7 +72,7 @@ const Dashboard = () => {
               )}
               <button
                 onClick={refresh}
-                className="px-3 py-2 text-xs font-medium text-white rounded-lg shadow-sm transition"
+                className="px-3 py-2 text-xs font-medium text-white rounded-lg shadow-sm transition hover:opacity-90"
                 style={{ backgroundColor: BLUE }}
               >
                 Actualiser
@@ -80,25 +80,24 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* KPI Cards */}
+          {/* KPI Cards - Optimized 6-card layout */}
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
             <KpiCard title="Total Tickets"  value={stats?.total}            subtitle="Total"         icon={<FiList />}        color="indigo" />
             <KpiCard title="Ouverts"        value={stats?.ouverts}          subtitle="En attente"    icon={<FiAlertCircle />} color="red"    />
             <KpiCard title="Résolus"        value={stats?.resolus}          subtitle="Résolus"      icon={<FiCheckCircle />} color="green"  />
             <KpiCard title="Clôturés"       value={stats?.clotures}         subtitle="Clôturés"      icon={<FiLock />}        color="blue"   />
             <KpiCard title="En Cours"       value={stats?.enCours}          subtitle="En traitement" icon={<FiClock />}       color="yellow" />
-            <KpiCard title="Temps Moyen"    value={stats?.resolutionMoyenne ? `${stats.resolutionMoyenne}h` : 'N/A'} subtitle="Résolution" icon={<FiTrendingUp />} color="blue" />
-            <KpiCard title="SLA"            value={stats?.slaCompliance}    subtitle="Conformité"    icon={<FiShield />}      color="teal"   />
+            <KpiCard title="Temps Moyen"    value={stats?.resolutionMoyenne ? `${stats.resolutionMoyenne}h` : 'N/A'} subtitle="Résolution" icon={<FiTrendingUp />} color="purple" />
           </div>
 
-          {/* Charts Row 1 */}
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Charts Row 1 - Enhanced spacing */}
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
             <TicketsPerDayChart data={parJour}   />
-            <TechnicianPerformanceChart data={topTechniciensCloture} metric="closed" />
+            <TechnicianPodiumChart data={topTechniciensCloture} />
           </div>
 
-          {/* Charts Row 2 */}
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {/* Charts Row 2 - Optimized layout */}
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
             <div className="lg:col-span-1">
               <ResolutionTimeChart data={parTechnicien} />
             </div>
@@ -124,7 +123,7 @@ const Dashboard = () => {
                       <tr className="text-xs text-gray-400 uppercase border-b">
                         <th className="pb-3 font-medium text-left">N° Ticket</th>
                         <th className="pb-3 font-medium text-left">Objet</th>
-                        <th className="pb-3 font-medium text-left">Technicien Description</th>
+                        <th className="pb-3 font-medium text-left">Technicien</th>
                         <th className="pb-3 font-medium text-left">Priorité</th>
                         <th className="pb-3 font-medium text-left">Statut</th>
                         <th className="pb-3 font-medium text-left">Date</th>

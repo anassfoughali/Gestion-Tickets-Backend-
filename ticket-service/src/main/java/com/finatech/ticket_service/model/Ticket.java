@@ -17,25 +17,19 @@ public class Ticket {
     @Id
     @Column(name = "\"IssueID\"")
     private int id;
-
     @Column(name = "\"AddressMatchcode\"")
     private String client ;
-
-
     @Column(name = "\"USER_DateCloture\"")
     private String date_cloture;
-
     @Column(name = "\"USER_DateReceptionEmail\"")
     private String date_reception;
-
     @Column(name = "\"Status\"")
     private int statusId;
-
     @Column(name = "\"Priority\"")
     private int priorityId;
-
     @Column(name = "\"IssueType\"")
     private int issueTypeId;
+
 
     // Champs transients pour les descriptions (matchcode)
     @Transient

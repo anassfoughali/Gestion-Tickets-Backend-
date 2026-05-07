@@ -1,0 +1,299 @@
+/* Premium Chart Card Styles */
+.premium-chart-card {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAFBFC 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+              0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 20px;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.premium-chart-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 
+              0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+/* Empty State */
+.premium-chart-card.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.empty-text {
+  font-size: 14px;
+  color: #9CA3AF;
+  font-weight: 500;
+}
+
+/* Chart Header */
+.chart-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 16px;
+}
+
+.header-content {
+  flex: 1;
+}
+
+.chart-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1F2937;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.01em;
+}
+
+.chart-subtitle {
+  font-size: 14px;
+  font-weight: 400;
+  color: #6B7280;
+  margin: 0;
+}
+
+/* Export Buttons */
+.export-buttons {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.export-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.export-btn:hover {
+  transform: translateY(-1px);
+}
+
+.export-btn:active {
+  transform: translateY(0);
+}
+
+.export-btn-secondary {
+  background-color: #FFFFFF;
+  color: #4B5563;
+  border: 1px solid #E5E7EB;
+}
+
+.export-btn-secondary:hover {
+  background-color: #F9FAFB;
+}
+
+.export-btn-primary {
+  background-color: #1F2937;
+  color: #FFFFFF;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.export-btn-primary:hover {
+  background-color: #111827;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Chart Container */
+.chart-container {
+  margin-top: 12px;
+}
+
+/* Custom Tooltip */
+.premium-tooltip {
+  background: rgba(17, 24, 39, 0.95);
+  border-radius: 8px;
+  padding: 12px 16px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3),
+              0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-width: 180px;
+}
+
+.tooltip-date {
+  color: #9CA3AF;
+  font-size: 12px;
+  margin: 0 0 8px 0;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.tooltip-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tooltip-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.tooltip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tooltip-label {
+  flex: 1;
+  color: #D1D5DB;
+  font-weight: 400;
+}
+
+.tooltip-value {
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+/* Custom Legend */
+.custom-legend {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.legend-item:hover {
+  opacity: 0.7;
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #4B5563;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .export-buttons {
+    width: 100%;
+  }
+
+  .export-btn {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .premium-chart-card {
+    padding: 16px;
+  }
+
+  .chart-title {
+    font-size: 16px;
+  }
+
+  .chart-subtitle {
+    font-size: 12px;
+  }
+
+  .export-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .export-btn span {
+    display: none;
+  }
+
+  .custom-legend {
+    gap: 16px;
+  }
+
+  .legend-label {
+    font-size: 12px;
+  }
+
+  .premium-tooltip {
+    padding: 10px 12px;
+    min-width: 150px;
+  }
+
+  .tooltip-item {
+    font-size: 12px;
+  }
+}
+
+/* Animation Classes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.premium-chart-card {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Focus Styles for Accessibility */
+.export-btn:focus-visible {
+  outline: 2px solid #6366F1;
+  outline-offset: 2px;
+}
+
+.legend-item:focus-visible {
+  outline: 2px solid #6366F1;
+  outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+  .premium-chart-card {
+    box-shadow: none;
+    border: 1px solid #E5E7EB;
+  }
+
+  .export-buttons {
+    display: none;
+  }
+}

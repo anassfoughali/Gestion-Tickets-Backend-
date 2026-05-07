@@ -16,6 +16,7 @@ public class Product {
     private int productId;
     @Column(name = "\"ProductName\"")
     private String product;
-
+    @Column(name="\"BriefDescription\"")
+    private String BriefDescription ; 
 
 }

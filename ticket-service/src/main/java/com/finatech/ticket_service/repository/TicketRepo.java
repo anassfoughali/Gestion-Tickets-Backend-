@@ -1,9 +1,13 @@
 package com.finatech.ticket_service.repository;
+import com.finatech.ticket_service.dto.TicketEvolutionParJourDTO;
 import com.finatech.ticket_service.model.Ticket;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
 import java.util.List;
 @Repository
 public interface TicketRepo extends JpaRepository<Ticket, Long> {
@@ -172,7 +176,7 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
             
             CASE 
                 WHEN t."USER_DateCloture" IS NOT NULL AND t."USER_DateReceptionEmail" IS NOT NULL
-                THEN DAYS_BETWEEN(TO_DATE(t."USER_DateReceptionEmail", 'DD/MM/YYYY HH24:MI'), t."USER_DateCloture")
+                THEN DAYS_BETWEEN(TO_DATE(t."USER_DateReceptionEmail", 'DD/MM/YYYY HH24:MI'), t."USER_DateCloture") * 24
                 ELSE NULL
             END AS duree_resolution,
             
@@ -198,5 +202,100 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
             AND s_issue_type."Setting" = 2
         """, nativeQuery = true)
     List<Object[]> getTicketsComplets();
+
+    // API - Top 5 techniciens par nombre de tickets clôturés - SQL natif
+    @Query(value = """
+        SELECT 
+            g."Description" AS technicien,
+            COUNT(i."IssueID") AS nombreTicketsClotures
+        FROM "ZDEV_GP"."MARISupportIssue" i
+        JOIN "ZDEV_GP"."MARISupportGroup" g
+            ON i."SupportGroupID" = g."GroupId"
+        JOIN "ZDEV_GP"."MARISupportSettings" s
+            ON i."Status" = s."ID"
+            AND s."Setting" = 1
+        WHERE (
+            LOWER(s."Matchcode") LIKE '%fermé%'
+            OR LOWER(s."Matchcode") LIKE '%ferme%'
+            OR LOWER(s."Matchcode") LIKE '%clôturé%'
+            OR LOWER(s."Matchcode") LIKE '%cloture%'
+            OR LOWER(s."Matchcode") LIKE '%clos%'
+        )
+        GROUP BY g."Description"
+        ORDER BY COUNT(i."IssueID") DESC
+        LIMIT 5
+        """, nativeQuery = true)
+    List<Object[]> getTop5TechniciensByClotures();
+
+
+    @Query(
+            value = """
+        SELECT COUNT(*)
+        FROM "ZDEV_GP"."MARISupportIssue" i
+        JOIN "ZDEV_GP"."MARISupportSettings" s 
+            ON s."ID" = i."Priority"
+            AND s."Setting" = 3
+        WHERE i."USER_DateReceptionEmail" IS NOT NULL
+          AND TO_DATE(SUBSTRING(i."USER_DateReceptionEmail", 1, 10), 'DD/MM/YYYY') >= :dateDebut
+          AND TO_DATE(SUBSTRING(i."USER_DateReceptionEmail", 1, 10), 'DD/MM/YYYY') <= :dateFin
+          AND s."Matchcode" = :priorite
+    """,
+            nativeQuery = true
+    )
+    public Long  coutTicketsArrivesParIntervalleEtPriorite(
+            @Param("dateDebut")LocalDateTime dateDebut ,
+            @Param("dateFin")LocalDateTime dateFin ,
+            @Param("priorite") String priorite
+
+            );
+
+    @Query(value = """
+        SELECT COUNT(*)
+        FROM "ZDEV_GP"."MARISupportIssue" i
+        JOIN "ZDEV_GP"."MARISupportSettings" s_priority
+            ON s_priority."ID" = i."Priority"
+            AND s_priority."Setting" = 3
+        JOIN "ZDEV_GP"."MARISupportSettings" s_status
+            ON s_status."ID" = i."Status"
+            AND s_status."Setting" = 1
+        WHERE i."USER_DateCloture" IS NOT NULL
+          AND i."USER_DateCloture" >= :dateDebut
+          AND i."USER_DateCloture" <= :dateFin
+          AND s_priority."Matchcode" = :priorite
+          AND (
+                LOWER(s_status."Matchcode") LIKE '%fermé%'
+             OR LOWER(s_status."Matchcode") LIKE '%clôturé%'
+             OR LOWER(s_status."Matchcode") LIKE '%clos%'
+          )
+""" , nativeQuery = true)
+    public Long  countTicketsClouresParIntervalleEtPriorite(
+            @Param("dateDebut") LocalDateTime dateDebut ,
+            @Param("dateFin") LocalDateTime dateFin ,
+            @Param("priorite") String priorite
+
+    ) ;
+
+    // Requête simplifiée pour récupérer les tickets arrivés par jour dans un intervalle avec priorité
+    @Query(value = """
+        SELECT 
+            TO_VARCHAR(TO_DATE(SUBSTRING(i."USER_DateReceptionEmail", 1, 10), 'DD/MM/YYYY'), 'YYYY-MM-DD') as date,
+            COUNT(*) as nb_arrives
+        FROM "ZDEV_GP"."MARISupportIssue" i
+        JOIN "ZDEV_GP"."MARISupportSettings" s
+            ON s."ID" = i."Priority"
+            AND s."Setting" = 3
+        WHERE i."USER_DateReceptionEmail" IS NOT NULL
+          AND TO_DATE(SUBSTRING(i."USER_DateReceptionEmail", 1, 10), 'DD/MM/YYYY') >= :dateDebut
+          AND TO_DATE(SUBSTRING(i."USER_DateReceptionEmail", 1, 10), 'DD/MM/YYYY') <= :dateFin
+          AND s."Matchcode" = :priorite
+        GROUP BY TO_VARCHAR(TO_DATE(SUBSTRING(i."USER_DateReceptionEmail", 1, 10), 'DD/MM/YYYY'), 'YYYY-MM-DD')
+        ORDER BY TO_VARCHAR(TO_DATE(SUBSTRING(i."USER_DateReceptionEmail", 1, 10), 'DD/MM/YYYY'), 'YYYY-MM-DD')
+        """, nativeQuery = true)
+    List<Object[]> getTicketsArrivesParJourEtPriorite(
+            @Param("dateDebut") LocalDateTime dateDebut,
+            @Param("dateFin") LocalDateTime dateFin,
+            @Param("priorite") String priorite
+    );
+
 
 }
