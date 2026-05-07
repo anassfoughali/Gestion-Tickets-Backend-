@@ -20,11 +20,6 @@ public class TicketImpl  implements TicketInterfaceService {
 
     final ProductRepo productRepo ; 
 
-    // Injecter ProductRepo via le constructeur existant.
-    // Ajouter ProductRepo comme paramètre du constructeur (ex: ProductRepo productRepo)
-    // et assigner : this.productRepo = productRepo;
-    // Déclarer également le champ : final ProductRepo productRepo; juste après ticketRepo.
-    //Dependency Injection by constructor
     public TicketImpl(
             TicketRepo ticketRepo , 
             ProductRepo productRepo
@@ -275,6 +270,25 @@ public class TicketImpl  implements TicketInterfaceService {
         }
 
     }
+
+    @Override
+    public List<ProductChangementDTO> getTop3ProduitsZeroChangement() {
+        try{
+            List<Object[]> produitList = productRepo.getTop3ProduitsZeroChangement();
+            return produitList.stream()
+                    .map(p-> new ProductChangementDTO(
+                            ((Number)p[0]).intValue(),
+                            (String) p[1],
+                            p[2] != null ? (String) p[2] : null,
+                            p[3] != null ? ((Number) p[3]).longValue() : 0L
+                            )).collect(Collectors.toList());
+        } catch (Exception e ){
+            log.error("Erreur getTop3ProduitsZeroChangement" , e );
+            throw new RuntimeException("Erreur lors de la récupération de Top 3 produit avec 0 nombre de changement  ");
+        }
+
+    }
+
 
 }
 

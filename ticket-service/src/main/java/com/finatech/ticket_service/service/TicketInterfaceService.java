@@ -15,15 +15,7 @@ public interface TicketInterfaceService  {
  List<TicketEvolutionFilteredDTO.TicketEvolutionParJourDTO> getTicketEvolutionFilteredSimple(LocalDate dateDebut, LocalDate dateFin, String priorite);
  List<ProductChangementDTO>  getProduitsAvecNombreChangements() ;
  List<ProductClientDTO> getIssuesWithProductAndClient() ;
+ List<ProductChangementDTO>  getTop3ProduitsZeroChangement();
 
-    /*
-     * METHOD SIGNATURE TO ADD: getIssuesWithProductAndClient
-     *
-     * // Add a new method signature to this interface
-     * // Return type: List<ProductClientDTO>
-     * // Method name: getIssuesWithProductAndClient
-     * // No parameters
-     * // Follow the same style as the existing signatures above (no body, ends with semicolon)
-     */
 }
 

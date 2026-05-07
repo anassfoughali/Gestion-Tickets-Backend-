@@ -1,5 +1,6 @@
 package com.finatech.ticket_service.repository;
 import com.finatech.ticket_service.model.Product;
+import org.hibernate.query.spi.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -31,5 +32,21 @@ public List<Object[]> getProduitsAvecNombreChangements();
     """, nativeQuery = true)
     List<Object[]> getIssuesWithProductAndClient();
 
+    @Query(value = """
+    SELECT 
+         p."ProductID",
+         p."ProductName",
+        p."BriefDescription",
+        0 
+        FROM  "ZDEV_GP"."MARISUpportProduct" p 
+        LEFT JOIN  "ZDEV_GP"."MARISUpportIssue" i ON  p."ProductID"=i."ProductID"
+        GROUP BY p."ProductID" , p."ProductName" , p."BriefDescription"
+        HAVING COUNT(i."issueID") = 0 
+        LIMIT 3 
+    """, nativeQuery = true)
+    List<Object[]> getTop3ProduitsZeroChangement();
+    /*
+     * Ordre des colonnes dans Object[] : row[0]=ProductID, row[1]=ProductName, row[2]=BriefDescription, row[3]=0
+     */
 
  }

@@ -146,5 +146,17 @@ public class TicketController {
         }
 
     }
+    // top3-zero-changement
+    @GetMapping("/produits/top3-zero-changement")
+    public ResponseEntity<List<ProductChangementDTO>> getTop3Produitwithzerochangement(){
+        try {
+            List<ProductChangementDTO> produitlist = ticketImpl.getTop3ProduitsZeroChangement();
+            return ResponseEntity.ok(produitlist);
+        }catch (Exception e ){
+            log.error("Erreur de getTop3Produitwithzerochangement");
+            return ResponseEntity.status(500).build() ;
+        }
+    }
+
 }
 
