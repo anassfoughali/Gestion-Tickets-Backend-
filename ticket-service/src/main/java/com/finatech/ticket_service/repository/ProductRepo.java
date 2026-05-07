@@ -38,10 +38,10 @@ public List<Object[]> getProduitsAvecNombreChangements();
          p."ProductName",
         p."BriefDescription",
         0 
-        FROM  "ZDEV_GP"."MARISUpportProduct" p 
-        LEFT JOIN  "ZDEV_GP"."MARISUpportIssue" i ON  p."ProductID"=i."ProductID"
+        FROM  "ZDEV_GP"."MARISupportProduct" p  
+        LEFT JOIN  "ZDEV_GP"."MARISupportIssue" i ON  p."ProductID"=i."ProductID"
         GROUP BY p."ProductID" , p."ProductName" , p."BriefDescription"
-        HAVING COUNT(i."issueID") = 0 
+        HAVING COUNT(i."IssueID") = 0 
         LIMIT 3 
     """, nativeQuery = true)
     List<Object[]> getTop3ProduitsZeroChangement();
